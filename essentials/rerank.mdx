@@ -1,0 +1,69 @@
+---
+title: "Rerankers"
+description: "Improve retrieval quality with two-stage search"
+icon: "magnifying-glass-plus"
+---
+
+## Why Rerankers?
+
+Rerankers address key challenges in retrieval quality:
+
+1. **Improved Accuracy**: Traditional vector search can miss relevant information due to information loss from compressing meaning into single vectors. Rerankers analyze documents in context of the specific query, providing more accurate relevance scoring.
+
+2. **Better Recall**: By retrieving more documents initially and reranking them, we can surface highly relevant documents that may have been ranked lower by vector search alone. This helps maximize retrieval recall while still keeping only the most relevant documents.
+
+3. **Context Window Optimization**: Rather than stuffing an LLM's context window with many documents, reranking helps identify the most relevant subset to include, optimizing LLM recall and response quality.
+
+## How It Works: Two-Stage Retrieval
+
+Reranking uses a two-stage approach:
+
+1. **First Stage - Vector Search**:
+
+   - Fast initial retrieval using vector embeddings
+   - Returns larger set of potentially relevant documents
+   - Enables efficient search across large document collections
+
+2. **Second Stage - Reranking**:
+   - Reranker model scores each document against the query
+   - Considers full document and query text together
+   - Reorders documents by relevance score
+   - Returns top N most relevant documents
+
+This approach combines the speed of vector search with the accuracy of rerankers.
+
+## Our Models
+
+We currently offer two specialized reranking models:
+
+| Model | Use Case            | Strengths                  |
+| ----- | ------------------- | -------------------------- |
+| Base  | General purpose     | Balanced performance       |
+| Large | High accuracy needs | Maximum relevance accuracy |
+
+## Comparison with Direct Vector Search
+
+| Approach           | Speed     | Accuracy  | Key Benefits               |
+| ------------------ | --------- | --------- | -------------------------- |
+| Vector Search Only | Very Fast | Good      | Scales to billions of docs |
+| With Reranking     | Fast      | Excellent | Higher relevance accuracy  |
+
+### Why Not Just Vector Search?
+
+While vector search is fast and scalable, it has limitations:
+
+- Must compress document meaning into single vector
+- No query context during embedding
+- Can miss relevant documents due to information loss
+
+### Why Not Just Reranking?
+
+Reranking all documents would be prohibitively slow:
+
+- Requires full transformer inference per document
+- Not feasible for large document collections
+- Two-stage approach gives best of both worlds
+
+## Implementation Guide
+
+Here's how to implement reranking in your retrieval pipeline:

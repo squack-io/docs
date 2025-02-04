@@ -1,0 +1,103 @@
+---
+title: "Fast Apply"
+description: "High-speed code generation with speculative decoding"
+icon: "bolt"
+---
+
+## Why Fast Apply?
+
+Fast Apply addresses key challenges in code generation:
+
+1. **Eliminates Output Degradation**: Traditional large language models tend to abbreviate or omit functionality on long-context tasks. Common approaches like Search/Replace or Diff formats become token-inefficient with 300B+ models, leading to slower and less reliable results.
+
+2. **Superior Speed**: With speeds of 900-1200 tokens/second, Fast Apply provides significant performance benefits for realtime generation, especially crucial for multi-LLM chains requiring parallel code generation.
+
+3. **Contextual Understanding**: Fast Apply maintains high accuracy by deeply understanding code context and dependencies, enabling it to generate code that seamlessly integrates with existing codebases while respecting established patterns and conventions.
+
+## Where Fast Apply Fits in AI Agent Systems
+
+Fast Apply is optimally positioned for snippet-based code generation within larger AI agent workflows:
+
+1. **Multi-File Code Generation**: When agents need to modify multiple files or make complex changes across a codebase, traditional approaches face significant challenges:
+
+   - Large models like Claude take 60-120 seconds to output complete files
+   - Context windows limit the amount of code that can be considered
+
+2. **Snippet-First Architecture**: Instead of asking SOTA models to generate entire files, a more efficient approach emerges:
+
+   - Use primary model (e.g., Claude) to generate focused code snippets
+   - Snippets are naturally in-distribution for these models
+
+3. **Optimized Division of Labor**:
+   - Primary LLM: Understands high-level intent and generates targeted snippets
+   - Fast Apply: Rapidly and accurately merges snippets into existing code
+   - Result: 5-10x faster execution with higher reliability
+
+This architecture significantly reduces latency while maintaining high accuracy, making it ideal for real-time agent systems that need to generate and modify code across multiple files.
+
+## How It Works: Speculative Decoding
+
+Fast Apply utilizes speculative decoding to achieve its high performance. This technique allows the model to:
+
+- Generate multiple tokens simultaneously by predicting likely sequences ahead of time
+- Validate and correct predictions in parallel using a smaller, faster model
+- Maintain high accuracy while significantly reducing latency through efficient verification
+
+The process works in two key steps:
+
+1. **Draft Generation**: A small, fast model generates initial token predictions for multiple positions ahead
+2. **Verification**: The main model validates these predictions, accepting correct ones and adjusting where needed
+
+This approach is particularly effective for code generation because programming languages have predictable patterns and structures that make speculative predictions more accurate.
+
+## Our Models
+
+We currently offer two specialized models:
+
+| Model  | Speed      | Use Case                                   |
+| ------ | ---------- | ------------------------------------------ |
+| Fast   | 900 tok/s  | Balance of speed and processing complexity |
+| Faster | 1200 tok/s | Maximum speed for realtime applications    |
+
+## Comparison with Other Providers
+
+| Provider   | Speed (tok/s) | Cost      | Key Limitations                    |
+| ---------- | ------------- | --------- | ---------------------------------- |
+| Fast Apply | 900-1200      | Base      | Full functionality maintained      |
+| Cerebras   | 2000-2200     | 3x Base   | 8k token limit, output degradation |
+| GPT-4 Mini | ~200          | 1.5x Base | Lower accuracy, limited context    |
+
+### Cerebras
+
+While Cerebras offers higher raw speed, it costs 3x more and has an 8k token output limit. It also tends to skip or abbreviate functionality on complex tasks, making it unreliable for production use.
+
+### GPT-4o Mini
+
+GPT-4o Mini is significantly slower at 200 tokens/second and has lower accuracy on code tasks. Its limited context window makes it impractical for real-world applications.
+
+## Prompt Engineering
+
+Fast Apply requires specific prompt formatting to achieve optimal code generation. Here's the recommended structure:
+
+### System Prompt
+
+```
+system_prompt = """Your job is to modify the provided component.
+    You narrow your focus on the MODIFICATION REQUEST and NOT other aspects of the code.
+    You provide only the necessary component code with the modifications.
+    You abbreviate any sections of the code in your response that will remain the same with "// ... rest of code ...".
+    You indicate the location of the modifications (additions and deletions) with comments and ellipses.
+    You do NOT provide commentary or comments, you only provide the code with a focus on the modifications."""
+
+user_prompt = """EXISTING CODE:
+    {initial_code}
+
+    MODIFICATION REQUEST:
+    {user_instructions}"""
+```
+
+## References
+
+For more details on the other companies' research into Fast Apply and speculative decoding approaches, see:
+
+- [Cursor's Technical Deep Dive on Instant Apply](https://web.archive.org/web/20240823050616/https://www.cursor.com/blog/instant-apply)

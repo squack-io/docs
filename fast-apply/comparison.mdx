@@ -1,0 +1,21 @@
+---
+title: "Provider Comparison"
+description: "How Fast Apply's speculative decoding compares to other implementations"
+icon: "scale-balanced"
+---
+
+## Comparison with Other Providers
+
+| Provider   | Speed (tok/s) | Cost      | Key Limitations                    |
+| ---------- | ------------- | --------- | ---------------------------------- |
+| Fast Apply | 900-1200      | Base      | Full functionality maintained      |
+| Cerebras   | 2000-2200     | 3x Base   | 8k token limit, output degradation |
+| GPT-4 Mini | ~200          | 1.5x Base | Lower accuracy, limited context    |
+
+### Cerebras
+
+While Cerebras offers higher raw speed, it costs 3x more and has an 8k token output limit. It also tends to skip or abbreviate functionality on complex tasks, making it unreliable for production use.
+
+### GPT-4o Mini
+
+GPT-4o Mini is significantly slower at 200 tokens/second and has lower accuracy on code tasks. Its limited context window makes it impractical for real-world applications.

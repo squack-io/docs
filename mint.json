@@ -51,7 +51,7 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
+      "pages": ["introduction"]
     },
     {
       "group": "Fast Apply",
@@ -76,8 +76,6 @@
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://linkedin.com/company/mintlify"
+    "linkedin": "https://www.linkedin.com/company/relace-ai/"
   }
 }

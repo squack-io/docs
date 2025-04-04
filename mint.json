@@ -25,13 +25,6 @@
     "name": "Dashboard",
     "url": "https://app.relace.ai"
   },
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    }
-  ],
   "navigation": [
     {
       "group": "Get Started",

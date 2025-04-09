@@ -34,7 +34,7 @@
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/relace-ai/"
   },
-  "sidebar": [
+  "sidenav": [
     {
       "section": "Overview",
       "items": [
@@ -50,6 +50,6 @@
     }
   ],
   "layout": {
-    "sidebar": true
+    "sidenav": true
   }
 }

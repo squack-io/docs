@@ -12,3 +12,72 @@ Code Reranker revolutionizes how we handle large codebases with LLMs:
 - **Code-Specific Accuracy:** Outperforms generalist rerankers by understanding code structure, dependencies, and programming patterns
 
 Unlike general-purpose rerankers, Code Reranker is specifically trained on code relationships and programming patterns, making it significantly more accurate for code-related tasks.
+
+## Key Features
+
+**Code-Aware Ranking:** Understands code structure and dependencies for better relevance.
+
+**Token Management:** Automatically fits within specified token limits while maximizing relevance.
+
+**Production Ready:** Tested and optimized for large-scale production codebases.
+
+**Language Agnostic:** Works with any programming language or framework.
+
+## API Reference
+
+### **Endpoint**
+
+POST ranker.endpoint.relace.run/v1/code/rank
+
+### Request Body
+
+query - The modification or search request
+
+codebase - Array of file objects containing filename and code
+
+token_limit - Maximum tokens to return
+
+### Example Request
+
+```json
+curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [YOUR_API_KEY]" \
+  -d '{
+    "query": "Optimize the search function for better performance",
+    "codebase": [
+      {
+        "filename": "src/search.ts",
+        "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+      },
+      {
+        "filename": "src/types.ts",
+        "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
+      }
+    ],
+    "token_limit": 128000
+  }'
+```
+
+### Response
+
+```json
+[
+  "src/search.ts",
+  "src/types.ts"
+]
+```
+
+## Troubleshooting
+
+### Best Practices
+
+- Be specific in your queries about what code you're looking for
+- Consider including relevant technical terms from your codebase
+- Set appropriate token limits based on your LLM's capabilities
+
+### Common Issues
+
+- Token limit too low for meaningful context - increase the limit
+- Too many irrelevant results - make your query more specific
+- Missing critical files - check if all necessary files are included in the codebase array

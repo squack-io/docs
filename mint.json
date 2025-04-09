@@ -48,8 +48,5 @@
         { "title": "Code Reranker", "href": "/code-reranker" }
       ]
     }
-  ],
-  "layout": {
-    "sidenav": true
-  }
+  ]
 }

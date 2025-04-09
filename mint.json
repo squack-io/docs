@@ -35,3 +35,21 @@
     "linkedin": "https://www.linkedin.com/company/relace-ai/"
   }
 }
+
+{
+  "sidebar": [
+    {
+      "section": "Overview",
+      "items": [
+        { "title": "Introduction", "href": "/introduction" }
+      ]
+    },
+    {
+      "section": "Model Guides",
+      "items": [
+        { "title": "Instant Apply", "href": "/instant-apply" },
+        { "title": "Code Reranker", "href": "/code-reranker" }
+      ]
+    }
+  ]
+}

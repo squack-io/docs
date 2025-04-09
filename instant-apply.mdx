@@ -44,6 +44,7 @@ stream - (Optional) Boolean to enable streaming response
 
 ### Example Request
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ```json
 curl -X POST https://instantapply.endpoint.relace.run/v1/code/apply \
   -H "Content-Type: application/json" \
@@ -54,16 +55,20 @@ curl -X POST https://instantapply.endpoint.relace.run/v1/code/apply \
     "stream": false
   }'
 ```
+</div>
 
 ### Response
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ```json
 // For non-streaming requests:
 {
   "mergedCode": "def hello(name):\n    print(f\"Hello, {name}!\")"
 }
 ```
+</div>
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ```json
 // For streaming requests:
 data: {"choices": [{"delta": {"content": "def "}}]}
@@ -72,6 +77,7 @@ data: {"choices": [{"delta": {"content": ":\n    "}}]}
 data: {"choices": [{"delta": {"content": "print(f\"Hello, {name}!\")"}}]}
 data: {"choices": [{"delta": {"content": "}"}}]}
 ```
+</div>
 
 ## Try It Out
 
@@ -97,6 +103,7 @@ The most common issues with Instant Apply stem from incorrect edit snippet forma
 
 When using Claude or other LLMs to generate edit snippets, provide them with the following prompt structure. This ensures the output matches Instant Apply's expected format and reduces integration errors.
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ````python
 # Recommended prompt structure for generating compatible edit snippets:
 
@@ -112,3 +119,4 @@ user_prompt = """EXISTING CODE:
 MODIFICATION REQUEST:
 {user_instructions}"""
 ````
+</div>

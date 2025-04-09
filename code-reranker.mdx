@@ -39,6 +39,7 @@ token_limit - Maximum tokens to return
 
 ### Example Request
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ```json
 curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
   -H "Content-Type: application/json" \
@@ -58,15 +59,18 @@ curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
     "token_limit": 128000
   }'
 ```
+</div>
 
 ### Response
 
+<div style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>
 ```json
 [
   "src/search.ts",
   "src/types.ts"
 ]
 ```
+</div>
 
 ## Troubleshooting
 

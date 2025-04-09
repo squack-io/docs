@@ -29,6 +29,10 @@
     {
       "group": "Get Started",
       "pages": ["introduction"]
+    },
+    {
+      "group": "Model Guides",
+      "pages": ["instant-apply", "code-reranker"]
     }
   ],
   "footerSocials": {

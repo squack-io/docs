@@ -1,0 +1,14 @@
+{
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["overview", "quickstart"]
+      },
+      {
+        "group": "Advanced",
+        "pages": ["advanced/components", "advanced/integrations"]
+      }
+    ]
+  }
+}

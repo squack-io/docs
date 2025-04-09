@@ -48,5 +48,8 @@
         { "title": "Code Reranker", "href": "/code-reranker" }
       ]
     }
-  ]
+  ],
+  "layout": {
+    "sidebar": true
+  }
 }

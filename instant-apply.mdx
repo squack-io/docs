@@ -63,7 +63,7 @@ curl -X POST https://instantapply.endpoint.relace.run/v1/code/apply \
   "mergedCode": "def hello(name):\n    print(f\"Hello, {name}!\")"
 }
 ```
-  
+
 ```json
 // For streaming requests:
 data: {"choices": [{"delta": {"content": "def "}}]}
@@ -75,13 +75,68 @@ data: {"choices": [{"delta": {"content": "}"}}]}
 
 ## Try It Out
 
-Download our sample implementation to get started:
+Example of adding code with Instant Apply:
 
-<CardGroup cols="1">
-  <Card title="Instant Apply Python Script" icon="merge" href="https://demo.relace.ai/assets/instant_apply.py">
-    A simple example implementation showing the basic structure and usage of Instant Apply.
-  </Card>
-</CardGroup>
+<CodeGroup>
+
+```python Python
+import requests
+
+url = "https://instantapply.endpoint.relace.run/v1/code/apply"
+headers = {
+    "Content-Type": "application/json", 
+    "Authorization": "Bearer [YOUR_API_KEY]"
+}
+
+initial_code = "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}"
+edit_snippet = "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
+
+data = {
+    "initialCode": initial_code,
+    "editSnippet": edit_snippet
+}
+
+response = requests.post(url, headers=headers, json=data)
+merged_code = response.json()["mergedCode"]
+```
+
+
+```javascript Javascript
+const url = "https://instantapply.endpoint.relace.run/v1/code/apply";
+const headers = {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer [YOUR_API_KEY]"
+};
+
+const initialCode = "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}";
+const editSnippet = "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}";
+
+const data = {
+  initialCode,
+  editSnippet
+};
+
+fetch(url, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify(data)
+})
+.then(response => response.json())
+.then(result => {
+  const mergedCode = result.mergedCode;
+  console.log(mergedCode);
+});
+```
+
+
+``` cURL
+curl -X POST 'https://instantapply.endpoint.relace.run/v1/code/apply' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer [YOUR_API_KEY]' \
+  -d '{"initialCode":"function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}","editSnippet":"// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"}'
+```
+
+</CodeGroup>
 
 ## Troubleshooting
 

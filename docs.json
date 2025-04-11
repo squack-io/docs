@@ -57,37 +57,20 @@
             ]
           },
           {
-            "group": "Endpoint",
+            "group": "Instant Apply",
             "pages": [
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/get"
-            ]
-          }
-        ]
-      },
-      {
-        "anchor": "FAQ",
-        "icon": "messages-question",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "faq/introduction"
+              "api-reference/instant-apply/add-code",
+              "api-reference/instant-apply/edit-code",
+              "api-reference/instant-apply/delete-code",
+              "api-reference/instant-apply/multifaceted-edit"
             ]
           },
           {
-            "group": "Tutorials",
+            "group": "Code Reranker",
             "pages": [
-              "faq/ex1",
-              "faq/ex2"
-            ]
-          },
-          {
-            "group": "Troubleshooting",
-            "pages": [
-              "faq/ex3",
-              "faq/ex4"
+              "api-reference/code-reranker/performance",
+              "api-reference/code-reranker/error-handling",
+              "api-reference/code-reranker/type-safety"
             ]
           }
         ]

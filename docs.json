@@ -59,9 +59,9 @@
           {
             "group": "Endpoint",
             "pages": [
-              "endpoint/create",
-              "endpoint/delete",
-              "endpoint/get"
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/get"
             ]
           }
         ]

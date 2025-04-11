@@ -25,75 +25,73 @@
     "name": "Dashboard",
     "url": "https://app.relace.ai"
   },
-  "navigation": {
-    "anchors": [
-      {
-        "anchor": "Documentation",
-        "icon": "book-open",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "docs/introduction"
-            ]
-          },
-          {
-            "group": "Model Guides",
-            "pages": [
-              "docs/instant-apply",
-              "docs/code-reranker"
-            ]
-          }
-        ]
-      },
-      {
-        "anchor": "API References",
-        "icon": "square-terminal",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint",
-            "pages": [
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/get"
-            ]
-          }
-        ]
-      },
-      {
-        "anchor": "FAQ",
-        "icon": "messages-question",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "faq-introduction"
-            ]
-          },
-          {
-            "group": "Tutorials",
-            "pages": [
-              "ex1",
-              "ex2"
-            ]
-          },
-          {
-            "group": "Troubleshooting",
-            "pages": [
-              "ex3",
-              "ex4"
-            ]
-          }
-        ]
-      }
-    ]
-  },
+  "navigation": [
+    {
+      "anchor": "Documentation",
+      "icon": "book-open",
+      "groups": [
+        {
+          "group": "Getting Started",
+          "pages": [
+            "docs/introduction"
+          ]
+        },
+        {
+          "group": "Model Guides",
+          "pages": [
+            "docs/instant-apply",
+            "docs/code-reranker"
+          ]
+        }
+      ]
+    },
+    {
+      "anchor": "API References",
+      "icon": "square-terminal",
+      "groups": [
+        {
+          "group": "Getting Started",
+          "pages": [
+            "api-reference/introduction"
+          ]
+        },
+        {
+          "group": "Endpoint",
+          "pages": [
+            "endpoint/create",
+            "endpoint/delete",
+            "endpoint/get"
+          ]
+        }
+      ]
+    },
+    {
+      "anchor": "FAQ",
+      "icon": "messages-question",
+      "groups": [
+        {
+          "group": "Getting Started",
+          "pages": [
+            "faq-introduction"
+          ]
+        },
+        {
+          "group": "Tutorials",
+          "pages": [
+            "ex1",
+            "ex2"
+          ]
+        },
+        {
+          "group": "Troubleshooting",
+          "pages": [
+            "ex3",
+            "ex4"
+          ]
+        }
+      ]
+    }
+  ],
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/relace-ai/"
   }

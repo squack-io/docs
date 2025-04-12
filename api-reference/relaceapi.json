@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Code Manipulation API",
-    "description": "API for applying code changes and ranking code solutions",
+    "title": "Relace API",
+    "description": "API for accessing Relace code generation models.",
     "version": "1.0.0",
     "license": {
       "name": "MIT"
@@ -11,11 +11,11 @@
   "servers": [
     {
       "url": "https://instantapply.endpoint.relace.run",
-      "description": "Code Apply Service"
+      "description": "Instant Apply"
     },
     {
       "url": "https://ranker.endpoint.relace.run",
-      "description": "Code Rank Service"
+      "description": "Code Reranker"
     }
   ],
   "security": [
@@ -26,20 +26,19 @@
   "paths": {
     "/v1/code/apply": {
       "post": {
-        "summary": "Apply code changes",
-        "description": "Applies suggested code edits to existing code",
-        "operationId": "applyCodeChanges",
+        "description": "Merge code snippets from an LLM into your existing codebase.",
         "requestBody": {
           "description": "Initial code and edits to apply",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CodeApplyRequest"
+                "$ref": "#/components/schemas/InstantApplyRequest"
               },
               "example": {
                 "initialCode": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}",
-                "editSnippet": "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
+                "editSnippet": "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}",
+                "stream": false
               }
             }
           }
@@ -50,7 +49,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CodeApplyResponse"
+                  "$ref": "#/components/schemas/InstantApplyResponse"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Stream of results from the Instant Apply model"
                 }
               }
             }
@@ -67,6 +72,46 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API key not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (3 requests per minute)",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Rate limit ceiling for the API key"
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Number of requests left for the time window"
+              },
+              "X-RateLimit-Reset": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Time at which the rate limit resets"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -90,16 +135,14 @@
     },
     "/v1/code/rank": {
       "post": {
-        "summary": "Rank code solutions",
-        "description": "Ranks code solutions based on a provided query and codebase context",
-        "operationId": "rankCodeSolutions",
+        "description": "Assess the relevance of each file in your codebase to a user's query.",
         "requestBody": {
-          "description": "Query and codebase context for ranking",
+          "description": "Query, codebase context, and token limit",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CodeRankRequest"
+                "$ref": "#/components/schemas/CodeRerankerRequest"
               },
               "example": {
                 "query": "Optimize the search function for better performance with large arrays",
@@ -113,18 +156,18 @@
                     "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
                   }
                 ],
-                "token_limit": 128000
+                "token_limit": 100000,
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Code solutions ranked successfully",
+            "description": "Codebase reranked successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CodeRankResponse"
+                  "$ref": "#/components/schemas/CodeRerankerResponse"
                 }
               }
             }
@@ -141,6 +184,46 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API key not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (3 requests per minute)",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Rate limit ceiling for the API key"
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Number of requests left for the time window"
+              },
+              "X-RateLimit-Reset": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Time at which the rate limit resets"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -165,7 +248,7 @@
   },
   "components": {
     "schemas": {
-      "CodeApplyRequest": {
+      "InstantApplyRequest": {
         "type": "object",
         "required": [
           "initialCode",
@@ -179,19 +262,43 @@
           "editSnippet": {
             "type": "string",
             "description": "The code changes to be applied to the initial code"
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Whether to stream the response back",
+            "default": false
+          },
+          "relace-metadata": {
+            "type": "object",
+            "description": "Optional metadata for logging and tracking purposes.",
+            "additionalProperties": true
           }
         }
       },
-      "CodeApplyResponse": {
+      "InstantApplyResponse": {
         "type": "object",
         "properties": {
-          "resultCode": {
+          "mergedCode": {
             "type": "string",
             "description": "The merged code with the changes applied"
           },
-          "success": {
-            "type": "boolean",
-            "description": "Indicates whether the code application was successful"
+          "usage": {
+            "type": "object",
+            "properties": {
+              "prompt_tokens": {
+                "type": "integer",
+                "description": "Number of tokens in the prompt"
+              },
+              "completion_tokens": {
+                "type": "integer",
+                "description": "Number of tokens in the completion"
+              },
+              "total_tokens": {
+                "type": "integer",
+                "description": "Total number of tokens used"
+              }
+            },
+            "description": "Token usage information for the request"
           }
         }
       },
@@ -212,11 +319,12 @@
           }
         }
       },
-      "CodeRankRequest": {
+      "CodeRerankerRequest": {
         "type": "object",
         "required": [
           "query",
-          "codebase"
+          "codebase",
+          "token_limit"
         ],
         "properties": {
           "query": {
@@ -233,56 +341,32 @@
           "token_limit": {
             "type": "integer",
             "description": "Maximum token limit for the response",
-            "default": 128000
+            "default": 100000
+          },
+          "relace-metadata": {
+            "type": "object",
+            "description": "Optional metadata for logging and tracking purposes. Removed before forwarding to origin server.",
+            "additionalProperties": true
           }
         }
       },
-      "RankedSolution": {
+      "CodeRerankerResponse": {
         "type": "object",
         "properties": {
-          "score": {
-            "type": "number",
-            "description": "Ranking score for this solution"
-          },
-          "solution": {
+          "response": {
             "type": "string",
-            "description": "The code solution"
+            "description": "Array of files ranked by relevance to the query"
           },
-          "explanation": {
-            "type": "string",
-            "description": "Explanation of the solution approach"
-          }
-        }
-      },
-      "CodeRankResponse": {
-        "type": "object",
-        "properties": {
-          "solutions": {
-            "type": "array",
-            "description": "Ranked code solutions",
-            "items": {
-              "$ref": "#/components/schemas/RankedSolution"
-            }
-          },
-          "success": {
-            "type": "boolean",
-            "description": "Indicates whether the ranking was successful"
+          "numTokens": {
+            "type": "integer",
+            "description": "Number of tokens processed in the request"
           }
         }
       },
       "Error": {
         "type": "object",
-        "required": [
-          "error",
-          "message"
-        ],
         "properties": {
           "error": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Error code"
-          },
-          "message": {
             "type": "string",
             "description": "Error message"
           }
@@ -293,8 +377,31 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "JWT Authorization header using the Bearer scheme"
+        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys (3 requests per minute)."
+      }
+    },
+    "parameters": {
+      "X-Relace-Headers": {
+        "name": "X-Relace-*",
+        "in": "header",
+        "description": "Custom headers starting with X-Relace- prefix are captured for logging purposes",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
       }
     }
+  },
+  "x-relace-proxy-info": {
+    "description": "Requests are processed through a Cloudflare Worker that handles authentication, rate limiting, and request routing",
+    "features": [
+      "API key validation against Supabase database",
+      "Rate limiting (3 requests per minute for rate-limited keys)",
+      "Request distribution across multiple origin servers",
+      "Usage tracking and logging to ClickHouse",
+      "Optional Stripe usage-based billing"
+    ],
+    "cachingStrategy": "Auth and origin information are cached for performance",
+    "loggingBehavior": "Request/response content is logged based on user preferences"
   }
 }

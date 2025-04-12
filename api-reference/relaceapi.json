@@ -1,128 +1,86 @@
 {
-    "openapi": "3.0.1",
-    "info": {
-      "title": "OpenAPI Plant Store",
-      "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-      "license": {
-        "name": "MIT"
-      },
-      "version": "1.0.0"
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Code Manipulation API",
+    "description": "API for applying code changes and ranking code solutions",
+    "version": "1.0.0",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://instantapply.endpoint.relace.run",
+      "description": "Code Apply Service"
     },
-    "servers": [
-      {
-        "url": "http://sandbox.mintlify.com"
-      }
-    ],
-    "security": [
-      {
-        "bearerAuth": []
-      }
-    ],
-    "paths": {
-      "/plants": {
-        "get": {
-          "description": "Returns all plants from the system that the user has access to",
-          "parameters": [
-            {
-              "name": "limit",
-              "in": "query",
-              "description": "The maximum number of results to return",
+    {
+      "url": "https://ranker.endpoint.relace.run",
+      "description": "Code Rank Service"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/code/apply": {
+      "post": {
+        "summary": "Apply code changes",
+        "description": "Applies suggested code edits to existing code",
+        "operationId": "applyCodeChanges",
+        "requestBody": {
+          "description": "Initial code and edits to apply",
+          "required": true,
+          "content": {
+            "application/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Plant response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Plant"
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Unexpected error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Error"
-                  }
-                }
+                "$ref": "#/components/schemas/CodeApplyRequest"
+              },
+              "example": {
+                "initialCode": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}",
+                "editSnippet": "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
               }
             }
           }
         },
-        "post": {
-          "description": "Creates a new plant in the store",
-          "requestBody": {
-            "description": "Plant to add to the store",
+        "responses": {
+          "200": {
+            "description": "Code successfully applied",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NewPlant"
+                  "$ref": "#/components/schemas/CodeApplyResponse"
                 }
               }
-            },
-            "required": true
+            }
           },
-          "responses": {
-            "200": {
-              "description": "plant response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "unexpected error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Error"
-                  }
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
-          }
-        }
-      },
-      "/plants/{id}": {
-        "delete": {
-          "description": "Deletes a single plant based on the ID supplied",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "ID of plant to delete",
-              "required": true,
-              "schema": {
-                "type": "integer",
-                "format": "int64"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
-          ],
-          "responses": {
-            "204": {
-              "description": "Plant deleted",
-              "content": {}
-            },
-            "400": {
-              "description": "unexpected error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Error"
-                  }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -130,66 +88,213 @@
         }
       }
     },
-    "components": {
-      "schemas": {
-        "Plant": {
-          "required": [
-            "name"
-          ],
-          "type": "object",
-          "properties": {
-            "name": {
-              "description": "The name of the plant",
-              "type": "string"
-            },
-            "tag": {
-              "description": "Tag to specify the type",
-              "type": "string"
+    "/v1/code/rank": {
+      "post": {
+        "summary": "Rank code solutions",
+        "description": "Ranks code solutions based on a provided query and codebase context",
+        "operationId": "rankCodeSolutions",
+        "requestBody": {
+          "description": "Query and codebase context for ranking",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CodeRankRequest"
+              },
+              "example": {
+                "query": "Optimize the search function for better performance with large arrays",
+                "codebase": [
+                  {
+                    "filename": "src/search.ts",
+                    "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n}\n}\n  return undefined;\n}"
+                  },
+                  {
+                    "filename": "src/types.ts",
+                    "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
+                  }
+                ],
+                "token_limit": 128000
+              }
             }
           }
         },
-        "NewPlant": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Plant"
-            },
-            {
-              "required": [
-                "id"
-              ],
-              "type": "object",
-              "properties": {
-                "id": {
-                  "description": "Identification number of the plant",
-                  "type": "integer",
-                  "format": "int64"
+        "responses": {
+          "200": {
+            "description": "Code solutions ranked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeRankResponse"
                 }
               }
             }
-          ]
-        },
-        "Error": {
-          "required": [
-            "error",
-            "message"
-          ],
-          "type": "object",
-          "properties": {
-            "error": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "message": {
-              "type": "string"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           }
         }
-      },
-      "securitySchemes": {
-        "bearerAuth": {
-          "type": "http",
-          "scheme": "bearer"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CodeApplyRequest": {
+        "type": "object",
+        "required": [
+          "initialCode",
+          "editSnippet"
+        ],
+        "properties": {
+          "initialCode": {
+            "type": "string",
+            "description": "The original code that needs to be modified"
+          },
+          "editSnippet": {
+            "type": "string",
+            "description": "The code changes to be applied to the initial code"
+          }
         }
+      },
+      "CodeApplyResponse": {
+        "type": "object",
+        "properties": {
+          "resultCode": {
+            "type": "string",
+            "description": "The merged code with the changes applied"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the code application was successful"
+          }
+        }
+      },
+      "CodeFile": {
+        "type": "object",
+        "required": [
+          "filename",
+          "code"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "The name of the file including its path"
+          },
+          "code": {
+            "type": "string",
+            "description": "The content of the file"
+          }
+        }
+      },
+      "CodeRankRequest": {
+        "type": "object",
+        "required": [
+          "query",
+          "codebase"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The natural language query describing the problem to solve"
+          },
+          "codebase": {
+            "type": "array",
+            "description": "An array of files with their content, providing context for the query",
+            "items": {
+              "$ref": "#/components/schemas/CodeFile"
+            }
+          },
+          "token_limit": {
+            "type": "integer",
+            "description": "Maximum token limit for the response",
+            "default": 128000
+          }
+        }
+      },
+      "RankedSolution": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "description": "Ranking score for this solution"
+          },
+          "solution": {
+            "type": "string",
+            "description": "The code solution"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explanation of the solution approach"
+          }
+        }
+      },
+      "CodeRankResponse": {
+        "type": "object",
+        "properties": {
+          "solutions": {
+            "type": "array",
+            "description": "Ranked code solutions",
+            "items": {
+              "$ref": "#/components/schemas/RankedSolution"
+            }
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the ranking was successful"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error",
+          "message"
+        ],
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "JWT Authorization header using the Bearer scheme"
       }
     }
   }
+}

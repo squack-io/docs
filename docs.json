@@ -59,18 +59,13 @@
           {
             "group": "Instant Apply",
             "pages": [
-              "api-reference/instant-apply/add-code",
-              "api-reference/instant-apply/edit-code",
-              "api-reference/instant-apply/delete-code",
-              "api-reference/instant-apply/multifaceted-edit"
+              "api-reference/instant-apply/apply",
             ]
           },
           {
             "group": "Code Reranker",
             "pages": [
-              "api-reference/code-reranker/performance",
-              "api-reference/code-reranker/error-handling",
-              "api-reference/code-reranker/type-safety"
+              "api-reference/code-reranker/rank",
             ]
           }
         ]

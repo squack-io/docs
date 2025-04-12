@@ -51,17 +51,16 @@
         "icon": "square-terminal",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Instant Apply",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/instant-apply"
             ]
           },
           {
-            "group": "Endpoints",
-            "openapi": {
-              "source": "/api-reference/relaceapi.json",
-              "directory": "api-reference"
-            }
+            "group": "Code Reranker",
+            "pages": [
+              "api-reference/code-reranker"
+            ]
           }
         ]
       }

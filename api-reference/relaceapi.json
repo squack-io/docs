@@ -26,7 +26,7 @@
   "paths": {
     "/v1/code/apply": {
       "post": {
-        "operationId": "Instant Apply",
+        "summary": "Instant Apply",
         "description": "Merge code snippets from an LLM into your existing codebase.",
         "requestBody": {
           "description": "Initial code and edits to apply",
@@ -136,7 +136,7 @@
     },
     "/v1/code/rank": {
       "post": {
-        "operationId": "Code Reranker",
+        "summary": "Code Reranker",
         "description": "Assess the relevance of each file in your codebase to a user's query.",
         "requestBody": {
           "description": "Query, codebase context, and token limit",

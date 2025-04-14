@@ -43,6 +43,13 @@
               "docs/instant-apply",
               "docs/code-reranker"
             ]
+          },
+          {
+            "group": "Pricing",
+            "pages": [
+              "docs/pricing",
+              "docs/policies"
+            ]
           }
         ]
       },

@@ -64,13 +64,13 @@
             ]
           },
           {
-            "group": "Instant Apply",
+            "group": "Apply Code",
             "pages": [
               "api-reference/instant-apply/apply"
             ]
           },
           {
-            "group": "Code Reranker",
+            "group": "Rank Code Relevance",
             "pages": [
               "api-reference/code-reranker/rank"
             ]

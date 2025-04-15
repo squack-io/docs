@@ -44,39 +44,6 @@ stream - (Optional) Boolean to enable streaming response
 
 ### Example Request
 
-```json
-curl -X POST https://instantapply.endpoint.relace.run/v1/code/apply \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{
-    "initialCode": "import os \n def hello():\n    print(\"Hello, World!\")",
-    "editSnippet": "# ... rest of code ... \ndef hello(name):\n    print(f\"Hello, {name}!\")",
-    "stream": false
-  }'
-```
-
-### Response
-
-```json
-// For non-streaming requests:
-{
-  "mergedCode": "def hello(name):\n    print(f\"Hello, {name}!\")"
-}
-```
-
-```json
-// For streaming requests:
-data: {"choices": [{"delta": {"content": "def "}}]}
-data: {"choices": [{"delta": {"content": "hello(name)"}}]}
-data: {"choices": [{"delta": {"content": ":\n    "}}]}
-data: {"choices": [{"delta": {"content": "print(f\"Hello, {name}!\")"}}]}
-data: {"choices": [{"delta": {"content": "}"}}]}
-```
-
-## Try It Out
-
-Example of adding code with Instant Apply:
-
 <CodeGroup>
 
 ```python Python
@@ -137,6 +104,34 @@ curl -X POST 'https://instantapply.endpoint.relace.run/v1/code/apply' \
 ```
 
 </CodeGroup>
+
+### Response
+
+```javascript Javascript
+function calculateTotal(items) {
+  let total = 0;
+  
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  
+  return total;
+}
+
+function applyDiscount(total, discountRules) {
+  let discountedTotal = total;
+  
+  if (discountRules.percentOff) {
+    discountedTotal -= (total * discountRules.percentOff / 100);
+  }
+  
+  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {
+    discountedTotal -= discountRules.fixedAmount;
+  }
+  
+  return Math.max(0, discountedTotal);
+}
+```
 
 ## Troubleshooting
 

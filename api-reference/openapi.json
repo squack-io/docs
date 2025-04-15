@@ -175,7 +175,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error400"
                 }
               }
             }
@@ -185,7 +185,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error401"
                 }
               }
             }
@@ -195,7 +195,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error404"
                 }
               }
             }
@@ -225,7 +225,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error429"
                 }
               }
             }
@@ -235,7 +235,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error500"
                 }
               }
             }
@@ -353,8 +353,9 @@
         "type": "object",
         "properties": {
           "response": {
-            "type": "string",
-            "description": "Array of files ranked by relevance to the query"
+            "type": "array",
+            "description": "Array of files ranked by relevance to the query",
+            "example": ["src/search.ts", "src/types.ts"]
           },
           "numTokens": {
             "type": "integer",
@@ -379,6 +380,16 @@
             "type": "string",
             "description": "Error message",
             "example": "Authorized header required"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Bad Request: Route not found"
           }
         }
       },

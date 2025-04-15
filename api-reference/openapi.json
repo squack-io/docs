@@ -50,6 +50,8 @@
                   "$ref": "#/components/schemas/InstantApplyResponse"
                 }
               },
+              "example": {"example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
+              },
               "text/event-stream": {
                 "schema": {
                   "type": "string",
@@ -65,6 +67,9 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
+              },
+              "example": {
+                "error": "Invalid JSON in request body"
               }
             }
           },
@@ -75,6 +80,9 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
+              },
+              "example": {
+                "error": "Authorization header required"
               }
             }
           },
@@ -278,9 +286,8 @@
         "properties": {
           "mergedCode": {
             "type": "string",
-            "description": "The merged code with the changes applied",
-            "example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n\n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n\n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n\n  return Math.max(0, discountedTotal);\n}"
-          },
+            "description": "The merged code with the changes applied"
+            },
           "usage": {
             "type": "object",
             "properties": {

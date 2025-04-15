@@ -24,7 +24,7 @@
     }
   ],
   "paths": {
-    "/v1/code/apply": {
+    "/v1/code/instant-apply/apply": {
       "post": {
         "title": "Apply Code",
         "summary": "Apply Code",
@@ -137,7 +137,6 @@
     },
     "/v1/code/rank": {
       "post": {
-        "title": "Rank Code Relevance",
         "summary": "Rank Code Relevance",
         "description": "Assess the relevance of each file in your codebase to a user's query.",
         "requestBody": {

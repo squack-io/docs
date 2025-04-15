@@ -66,13 +66,13 @@
           {
             "group": "Instant Apply",
             "pages": [
-              "api-reference/instant-apply"
+              "api-reference/instant-apply/apply"
             ]
           },
           {
             "group": "Code Reranker",
             "pages": [
-              "api-reference/code-reranker"
+              "api-reference/code-reranker/rank"
             ]
           }
         ]

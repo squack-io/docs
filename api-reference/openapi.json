@@ -63,12 +63,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error400"
                 }
               }
-            },
-            "example": {
-              "error": "Invalid JSON in request body"
             }
           },
           "401": {
@@ -76,11 +73,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error401"
                 }
-              },
-              "example": {
-                "error": "Authorization header required"
               }
             }
           },
@@ -89,7 +83,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error404"
                 }
               }
             }
@@ -119,7 +113,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error429"
                 }
               }
             }
@@ -129,7 +123,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error500"
                 }
               }
             }
@@ -286,6 +280,8 @@
             "type": "string",
             "description": "The merged code with the changes applied"
           },
+          "example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n\n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n\n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n\n  return Math.max(0, discountedTotal);\n}"
+          },
           "usage": {
             "type": "object",
             "properties": {
@@ -367,12 +363,43 @@
           }
         }
       },
-      "Error": {
+      "Error400": {
         "type": "object",
         "properties": {
           "error": {
             "type": "string",
-            "description": "Error message"
+            "description": "Error message",
+            "example": "Invalid JSON in request body"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Authorized header required"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Rate limit exceeded: Maximum 3 requests per minute allowed"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Error fetching from origin server"
           }
         }
       }

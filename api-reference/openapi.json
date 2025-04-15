@@ -48,9 +48,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InstantApplyResponse"
+                },
+                "example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
                 }
-              },
-              "example": {"example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
               },
               "text/event-stream": {
                 "schema": {
@@ -92,6 +92,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad Request: Route not found."
                 }
               }
             }
@@ -122,6 +125,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Rate limit exceeded: Maximum 3 requests per minute allowed)"
                 }
               }
             }
@@ -133,6 +139,9 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
+              },
+              "example": {
+                "error": "Error fetching from origin server)"
               }
             }
           }

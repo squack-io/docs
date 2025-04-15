@@ -66,13 +66,13 @@
           {
             "group": "Apply Code",
             "pages": [
-              "api-reference/instant-apply/apply"
+              "api-reference/instant-apply"
             ]
           },
           {
             "group": "Rank Code Relevance",
             "pages": [
-              "api-reference/code-reranker/rank"
+              "api-reference/code-reranker"
             ]
           }
         ]

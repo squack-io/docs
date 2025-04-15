@@ -11,11 +11,11 @@
   "servers": [
     {
       "url": "https://instantapply.endpoint.relace.run",
-      "description": "Instant Apply"
+      "description": "Apply Code"
     },
     {
       "url": "https://ranker.endpoint.relace.run",
-      "description": "Code Reranker"
+      "description": "Rank Code Relevance"
     }
   ],
   "security": [
@@ -24,7 +24,7 @@
     }
   ],
   "paths": {
-    "/v1/code/instant-apply/apply": {
+    "/v1/code/apply": {
       "post": {
         "title": "Apply Code",
         "summary": "Apply Code",
@@ -137,6 +137,7 @@
     },
     "/v1/code/rank": {
       "post": {
+        "title": "Rank Code Relevance",
         "summary": "Rank Code Relevance",
         "description": "Assess the relevance of each file in your codebase to a user's query.",
         "requestBody": {

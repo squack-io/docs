@@ -66,6 +66,9 @@
                   "$ref": "#/components/schemas/Error"
                 }
               }
+            },
+            "example": {
+              "error": "Invalid JSON in request body"
             }
           },
           "401": {
@@ -75,6 +78,9 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
+              },
+              "example": {
+                "error": "Authorization header required"
               }
             }
           },

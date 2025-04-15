@@ -48,8 +48,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InstantApplyResponse"
-                },
-                "example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}"
                 }
               },
               "text/event-stream": {
@@ -67,9 +65,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
-              },
-              "example": {
-                "error": "Invalid JSON in request body"
               }
             }
           },
@@ -80,9 +75,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
-              },
-              "example": {
-                "error": "Authorization header required"
               }
             }
           },
@@ -92,9 +84,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Bad Request: Route not found."
                 }
               }
             }
@@ -125,9 +114,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Rate limit exceeded: Maximum 3 requests per minute allowed)"
                 }
               }
             }
@@ -139,9 +125,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
-              },
-              "example": {
-                "error": "Error fetching from origin server)"
               }
             }
           }
@@ -229,7 +212,7 @@
               "X-RateLimit-Remaining": {
                 "schema": {
                   "type": "string"
-                }
+                },
                 "description": "Number of requests left for the time window"
               },
               "X-RateLimit-Reset": {
@@ -259,7 +242,8 @@
           }
         }
       }
-    },
+    }
+  },
   "components": {
     "schemas": {
       "InstantApplyRequest": {
@@ -295,7 +279,7 @@
           "mergedCode": {
             "type": "string",
             "description": "The merged code with the changes applied"
-            },
+          },
           "usage": {
             "type": "object",
             "properties": {

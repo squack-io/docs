@@ -229,7 +229,7 @@
               "X-RateLimit-Remaining": {
                 "schema": {
                   "type": "string"
-                },
+                }
                 "description": "Number of requests left for the time window"
               },
               "X-RateLimit-Reset": {
@@ -259,8 +259,7 @@
           }
         }
       }
-    }
-  },
+    },
   "components": {
     "schemas": {
       "InstantApplyRequest": {

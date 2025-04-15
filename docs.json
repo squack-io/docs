@@ -58,21 +58,15 @@
         "icon": "square-terminal",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Instant Apply",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/instant-apply/apply"
             ]
           },
           {
-            "group": "Apply Code",
+            "group": "Code Reranker",
             "pages": [
-              "api-reference/instant-apply"
-            ]
-          },
-          {
-            "group": "Rank Code Relevance",
-            "pages": [
-              "api-reference/code-reranker"
+              "api-reference/code-reranker/rank"
             ]
           }
         ]

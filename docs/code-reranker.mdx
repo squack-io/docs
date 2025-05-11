@@ -13,6 +13,29 @@ Code Reranker revolutionizes how we handle large codebases with LLMs:
 
 Unlike general-purpose rerankers, Code Reranker is specifically trained on code relationships and programming patterns, making it significantly more accurate for code-related tasks.
 
+## Performance Metrics
+
+The v2 Code Reranker provides detailed relevance scores that can be used to optimize token usage while maintaining high recall. The plot below shows how different threshold values affect performance:
+
+<img
+  src="/images/performance_metrics.png"
+  alt="Code Reranker Performance Metrics"
+  width="100%"
+/>
+
+### Understanding the Metrics
+
+- **Threshold**: The minimum relevance score required for a file to be included
+- **Recall**: Percentage of relevant files that are included (higher is better)
+- **Tokens Used**: Percentage of total tokens that are included
+- **Tokens Saved**: Percentage of tokens that are excluded
+
+### Recommended Thresholds
+
+- **High Recall (95%+)**: Use threshold ≤ 0.08
+- **Balanced (80-90%)**: Use threshold between 0.20-0.30
+- **Token Optimized**: Use threshold ≥ 0.40
+
 ## Key Features
 
 **Code-Aware Ranking:** Understands code structure and dependencies for better relevance.
@@ -23,11 +46,20 @@ Unlike general-purpose rerankers, Code Reranker is specifically trained on code 
 
 **Language Agnostic:** Works with any programming language or framework.
 
+## API Versions
+
+### v1 Ranker
+The original version that returns a simple ranked list of files.
+
+### v2 Ranker
+An enhanced version that provides detailed relevance scores (0-1) for each file, helping you better understand the relative importance of each file to your query.
+
 ## API Reference
 
-### **Endpoint**
+### **Endpoints**
 
-POST ranker.endpoint.relace.run/v1/code/rank
+- POST ranker.endpoint.relace.run/v1/code/rank
+- POST ranker.endpoint.relace.run/v2/code/rank
 
 ### Request Body
 
@@ -43,7 +75,7 @@ token_limit - Maximum tokens to return
 ```python Python
 import requests
 
-url = "https://ranker.endpoint.relace.run/v1/code/rank"
+url = "https://ranker.endpoint.relace.run/v2/code/rank"  # Using v2 endpoint
 headers = { "Content-Type": "application/json", "Authorization": "Bearer [YOUR_API_KEY]" }
 
 query = "Optimize the search function for better performance with large arrays"
@@ -56,9 +88,8 @@ response = requests.post(url, headers=headers, json=data)
 ranked_code = response.json()
 ```
 
-
 ```javascript Javascript
-const url = "https://ranker.endpoint.relace.run/v1/code/rank";
+const url = "https://ranker.endpoint.relace.run/v2/code/rank";  // Using v2 endpoint
 const headers = { "Content-Type": "application/json", "Authorization": "Bearer [YOUR_API_KEY]" };
 
 const query = "Optimize the search function for better performance with large arrays";
@@ -72,9 +103,8 @@ fetch(url, { method: 'POST', headers, body: JSON.stringify(data) })
   .then(result => console.log(result));
 ```
 
-
 ```cURL cURL
-curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
+curl -X POST "https://ranker.endpoint.relace.run/v2/code/rank" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer [YOUR_API_KEY]" \
   -d '{"query": "Optimize the search function for better performance with large arrays", "codebase": [ { "filename": "src/search.ts", "code": "function findItem(array: Item[], targetId: string): Item | undefined {\\n  for (let i = 0; i < array.length; i++) {\\n    const item = array[i];\\n    if (item.id === targetId) {\\n      return item;\\n}\\n}\\n  return undefined;\\n}"}, { "filename": "src/types.ts", "code": "interface Item {\\n  id: string;\\n  value: string;\\n  metadata?: Record<string, unknown>;\\n}"}, { "filename": "src/render.ts", "code": "function renderItems(items: Item[]): void {\\n  const container = document.getElementById('items-container');\\n  if (!container) return;\\n  \\n  container.innerHTML = '';\\n  \\n  for (const item of items) {\\n    const element = document.createElement('div');\\n    element.textContent = item.value;\\n    element.dataset.id = item.id;\\n    container.appendChild(element);\\n}\\n}"}, { "filename": "src/styles.css", "code": ".container {\\n  max-width: 1200px;\\n  margin: 0 auto;\\n  padding: 20px;\\n}\\n\\n.header {\\n  background: #f5f5f5;\\n  padding: 1rem;\\n}"}, { "filename": "src/constants.ts", "code": "export const APP_NAME = 'MyApp';\\nexport const VERSION = '1.0.0';\\nexport const MAX_ITEMS = 1000;"}
@@ -83,8 +113,9 @@ curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
 
 </CodeGroup>
 
-### Response
+### Response Examples
 
+#### v1 Response
 ```json
 [
   "src/search.ts",
@@ -95,6 +126,23 @@ curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
 ]
 ```
 
+#### v2 Response
+```json
+{
+  "results": [
+    {
+      "filename": "src/search.ts",
+      "score": 0.953125
+    },
+    {
+      "filename": "src/utils.ts",
+      "score": 0.234375
+    }
+  ],
+  "numTokens": 261
+}
+```
+
 ## Troubleshooting
 
 ### Best Practices
@@ -102,9 +150,11 @@ curl -X POST "https://ranker.endpoint.relace.run/v1/code/rank" \
 - Be specific in your queries about what code you're looking for
 - Consider including relevant technical terms from your codebase
 - Set appropriate token limits based on your LLM's capabilities
+- Use v2 when you need detailed relevance scores for better prioritization
 
 ### Common Issues
 
 - Token limit too low for meaningful context - increase the limit
 - Too many irrelevant results - make your query more specific
 - Missing critical files - check if all necessary files are included in the codebase array
+- Low relevance scores - refine your query to be more specific to the code you're looking for

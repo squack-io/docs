@@ -100,7 +100,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -144,7 +144,7 @@
     },
     "/v1/code/rank": {
       "post": {
-        "description": "Assess the relevance of each file in your codebase to a user's query.",
+        "description": "List files in your codebase in order of relevance to a user's query.",
         "servers": [
           {
             "url": "https://ranker.endpoint.relace.run"
@@ -229,7 +229,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -273,7 +273,7 @@
     },
     "/v2/code/rank": {
       "post": {
-        "description": "Enhanced version of the code ranker that provides relevance scores for each file in your codebase. Returns a detailed ranking with numerical scores indicating how relevant each file is to the query.",
+        "description": "Assess the relevance of each file in your codebase to a user's query.",
         "servers": [
           {
             "url": "https://ranker.endpoint.relace.run"
@@ -342,7 +342,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -452,7 +452,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -731,7 +731,7 @@
           "error": {
             "type": "string",
             "description": "Error message",
-            "example": "Rate limit exceeded: Maximum 3 requests per minute allowed"
+            "example": "Rate limit exceeded"
           }
         }
       },
@@ -750,7 +750,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys (3 requests per minute)."
+        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys."
       }
     },
     "parameters": {
@@ -764,17 +764,5 @@
         "required": false
       }
     }
-  },
-  "x-relace-proxy-info": {
-    "description": "Requests are processed through a Cloudflare Worker that handles authentication, rate limiting, and request routing",
-    "features": [
-      "API key validation against Supabase database",
-      "Rate limiting (3 requests per minute for rate-limited keys)",
-      "Request distribution across multiple origin servers",
-      "Usage tracking and logging to ClickHouse",
-      "Optional Stripe usage-based billing"
-    ],
-    "cachingStrategy": "Auth and origin information are cached for performance",
-    "loggingBehavior": "Request/response content is logged based on user preferences"
   }
 }

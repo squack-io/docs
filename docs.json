@@ -69,6 +69,12 @@
               "api-reference/code-reranker/v1rank",
               "api-reference/code-reranker/v2rank"
             ]
+          },
+          {
+            "group": "Code Embedder",
+            "pages": [
+              "api-reference/embed-code/v1embed"
+            ]
           }
         ]
       }

@@ -16,6 +16,10 @@
     {
       "url": "https://ranker.endpoint.relace.run",
       "description": "Server for code ranking endpoints"
+    },
+    {
+      "url": "https://embeddings.endpoint.relace.run",
+      "description": "Server for code embedding endpoints"
     }
   ],
   "security": [
@@ -379,6 +383,116 @@
           }
         }
       }
+    },
+    "/v1/code/embed": {
+      "post": {
+        "description": "Embed code snippets into a vector database for semantic search.",
+        "servers": [
+          {
+            "url": "https://embeddings.endpoint.relace.run"
+          }
+        ],
+        "requestBody": {
+          "description": "Codebase context for embedding",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1CodeEmbedderRequest"
+              },
+              "example": {
+                "model": "relace-embed-v1",
+                "input": [
+                  "input 1",
+                  "input 2"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Codebase embedded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1CodeEmbedderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API key not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (3 requests per minute)",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Rate limit ceiling for the API key"
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Number of requests left for the time window"
+              },
+              "X-RateLimit-Reset": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Time at which the rate limit resets"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error429"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -542,6 +656,42 @@
             "type": "integer",
             "description": "Number of tokens processed in the request",
             "example": 261
+          }
+        }
+      },
+      "v1CodeEmbedderRequest": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "The model to use for embedding"
+          },
+          "input": {
+            "type": "array",
+            "description": "Array of strings to embed",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "v1CodeEmbedderResponse": {
+        "type": "object",
+        "properties": {
+          "embeddings": {
+            "type": "array",
+            "description": "Array of embeddings for the input strings",
+            "items": {
+              "type": "array",
+              "description": "Embedding for the input string",
+              "items": {
+                "type": "number"
+              }
+            },
+            "example": [
+              [0.123, 0.456, 0.789],
+              [0.234, 0.567, 0.890]
+            ]
           }
         }
       },

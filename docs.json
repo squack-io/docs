@@ -60,13 +60,20 @@
           {
             "group": "Instant Apply",
             "pages": [
-              "api-reference/instant-apply/apply"
+              "api-reference/instant-apply/v1apply"
             ]
           },
           {
             "group": "Code Reranker",
             "pages": [
-              "api-reference/code-reranker/rank"
+              "api-reference/code-reranker/v1rank",
+              "api-reference/code-reranker/v2rank"
+            ]
+          },
+          {
+            "group": "Code Embedder",
+            "pages": [
+              "api-reference/embed-code/v1embed"
             ]
           }
         ]

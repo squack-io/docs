@@ -10,10 +10,16 @@
   },
   "servers": [
     {
-      "url": "https://instantapply.endpoint.relace.run"
+      "url": "https://instantapply.endpoint.relace.run",
+      "description": "Server for code application endpoints"
     },
     {
-      "url": "https://ranker.endpoint.relace.run"
+      "url": "https://ranker.endpoint.relace.run",
+      "description": "Server for code ranking endpoints"
+    },
+    {
+      "url": "https://embeddings.endpoint.relace.run",
+      "description": "Server for code embedding endpoints"
     }
   ],
   "security": [
@@ -25,6 +31,11 @@
     "/v1/code/apply": {
       "post": {
         "description": "Merge code snippets from an LLM into your existing codebase.",
+        "servers": [
+          {
+            "url": "https://instantapply.endpoint.relace.run"
+          }
+        ],
         "requestBody": {
           "description": "Initial code and edits to apply",
           "required": true,
@@ -89,7 +100,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -133,7 +144,12 @@
     },
     "/v1/code/rank": {
       "post": {
-        "description": "Assess the relevance of each file in your codebase to a user's query.",
+        "description": "List files in your codebase in order of relevance to a user's query.",
+        "servers": [
+          {
+            "url": "https://ranker.endpoint.relace.run"
+          }
+        ],
         "requestBody": {
           "description": "Query, codebase context, and token limit",
           "required": true,
@@ -177,7 +193,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CodeRerankerResponse"
+                  "$ref": "#/components/schemas/v1CodeRerankerResponse"
                 }
               }
             }
@@ -213,7 +229,230 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (3 requests per minute)",
+            "description": "Rate limit exceeded",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Rate limit ceiling for the API key"
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Number of requests left for the time window"
+              },
+              "X-RateLimit-Reset": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Time at which the rate limit resets"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error429"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/code/rank": {
+      "post": {
+        "description": "Assess the relevance of each file in your codebase to a user's query.",
+        "servers": [
+          {
+            "url": "https://ranker.endpoint.relace.run"
+          }
+        ],
+        "requestBody": {
+          "description": "Query and codebase context for relevance scoring",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CodeRerankerRequest"
+              },
+              "example": {
+                "query": "Optimize the search function for better performance with large arrays",
+                "codebase": [
+                  {
+                    "filename": "src/search.ts",
+                    "code": "function findItem(array: Item[], targetId: string): Item | undefined {\\n  for (let i = 0; i < array.length; i++) {\\n    const item = array[i];\\n    if (item.id === targetId) {\\n      return item;\\n}\\n}\\n  return undefined;\\n}"
+                  }
+                ],
+                "token_limit": 100000
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Codebase reranked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v2CodeRerankerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API key not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Rate limit ceiling for the API key"
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Number of requests left for the time window"
+              },
+              "X-RateLimit-Reset": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Time at which the rate limit resets"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error429"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/code/embed": {
+      "post": {
+        "description": "Embed code snippets into a vector database for semantic search.",
+        "servers": [
+          {
+            "url": "https://embeddings.endpoint.relace.run"
+          }
+        ],
+        "requestBody": {
+          "description": "Codebase context for embedding",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1CodeEmbedderRequest"
+              },
+              "example": {
+                "model": "relace-embed-v1",
+                "input": [
+                  "input 1",
+                  "input 2"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Codebase embedded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1CodeEmbedderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API key not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
             "headers": {
               "X-RateLimit-Limit": {
                 "schema": {
@@ -364,7 +603,7 @@
           }
         }
       },
-      "CodeRerankerResponse": {
+      "v1CodeRerankerResponse": {
         "type": "object",
         "properties": {
           "response": {
@@ -382,6 +621,77 @@
             "type": "integer",
             "description": "Number of tokens processed in the request",
             "example": 472
+          }
+        }
+      },
+      "v2CodeRerankerResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "description": "Array of files ranked by relevance to the query, with their scores",
+            "items": {
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "type": "string",
+                  "description": "The name of the file including its path"
+                },
+                "score": {
+                  "type": "number",
+                  "description": "The relevance score for this file (between 0 and 1)",
+                  "format": "float"
+                }
+              },
+              "required": ["filename", "score"]
+            },
+            "example": [
+              {
+                "filename": "src/search.ts",
+                "score": 0.953125
+              }
+            ]
+          },
+          "numTokens": {
+            "type": "integer",
+            "description": "Number of tokens processed in the request",
+            "example": 261
+          }
+        }
+      },
+      "v1CodeEmbedderRequest": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "The model to use for embedding"
+          },
+          "input": {
+            "type": "array",
+            "description": "Array of strings to embed",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "v1CodeEmbedderResponse": {
+        "type": "object",
+        "properties": {
+          "embeddings": {
+            "type": "array",
+            "description": "Array of embeddings for the input strings",
+            "items": {
+              "type": "array",
+              "description": "Embedding for the input string",
+              "items": {
+                "type": "number"
+              }
+            },
+            "example": [
+              [0.123, 0.456, 0.789],
+              [0.234, 0.567, 0.890]
+            ]
           }
         }
       },
@@ -421,7 +731,7 @@
           "error": {
             "type": "string",
             "description": "Error message",
-            "example": "Rate limit exceeded: Maximum 3 requests per minute allowed"
+            "example": "Rate limit exceeded"
           }
         }
       },
@@ -440,7 +750,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys (3 requests per minute)."
+        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys."
       }
     },
     "parameters": {
@@ -454,17 +764,5 @@
         "required": false
       }
     }
-  },
-  "x-relace-proxy-info": {
-    "description": "Requests are processed through a Cloudflare Worker that handles authentication, rate limiting, and request routing",
-    "features": [
-      "API key validation against Supabase database",
-      "Rate limiting (3 requests per minute for rate-limited keys)",
-      "Request distribution across multiple origin servers",
-      "Usage tracking and logging to ClickHouse",
-      "Optional Stripe usage-based billing"
-    ],
-    "cachingStrategy": "Auth and origin information are cached for performance",
-    "loggingBehavior": "Request/response content is logged based on user preferences"
   }
 }

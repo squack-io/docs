@@ -604,25 +604,15 @@
         }
       },
       "v1CodeRerankerResponse": {
-        "type": "object",
-        "properties": {
-          "response": {
-            "type": "array",
-            "description": "Array of files ranked by relevance to the query",
-            "example": [
-              "src/search.ts",
-              "src/styles.css",
-              "src/render.ts",
-              "src/constants.ts",
-              "src/types.ts"
-            ]
-          },
-          "numTokens": {
-            "type": "integer",
-            "description": "Number of tokens processed in the request",
-            "example": 472
-          }
-        }
+        "type": "array",
+        "description": "Array of files ranked by relevance to the query",
+        "example": [
+          "src/search.ts",
+          "src/styles.css",
+          "src/render.ts",
+          "src/constants.ts",
+          "src/types.ts"
+        ]
       },
       "v2CodeRerankerResponse": {
         "type": "object",

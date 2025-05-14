@@ -642,10 +642,16 @@
               }
             ]
           },
-          "numTokens": {
-            "type": "integer",
-            "description": "Number of tokens processed in the request",
-            "example": 261
+          "usage": {
+            "type": "object",
+            "properties": {
+              "total_tokens": {
+                "type": "integer",
+                "description": "Total number of tokens used",
+                "example": 319
+              }
+            },
+            "description": "Token usage information for the request"
           }
         }
       },
@@ -682,6 +688,17 @@
               [0.123, 0.456, 0.789],
               [0.234, 0.567, 0.890]
             ]
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "total_tokens": {
+                "type": "integer",
+                "description": "Total number of tokens used",
+                "example": 319
+              }
+            },
+            "description": "Token usage information for the request"
           }
         }
       },

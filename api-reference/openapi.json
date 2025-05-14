@@ -675,20 +675,32 @@
       "v1CodeEmbedderResponse": {
         "type": "object",
         "properties": {
-          "embeddings": {
+          "results": {
             "type": "array",
-            "description": "Array of embeddings for the input strings",
+            "description": "Array of embeddings of the input strings",
             "items": {
-              "type": "array",
-              "description": "Embedding for the input string",
-              "items": {
-                "type": "number"
-              }
-            },
-            "example": [
-              [0.123, 0.456, 0.789],
-              [0.234, 0.567, 0.890]
-            ]
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "description": "Index of the input string in the request"
+                },
+                "embedding": {
+                  "type": "array",
+                  "description": "Embedding vector of the input string"
+                }
+              },
+              "example": [
+                {
+                  "index": 0,
+                  "embedding": [0.123, 0.456, 0.789]
+                },
+                {
+                  "index": 1,
+                  "embedding":  [0.234, 0.567, 0.890]
+                }
+              ]
+            }
           },
           "usage": {
             "type": "object",
@@ -696,7 +708,7 @@
               "total_tokens": {
                 "type": "integer",
                 "description": "Total number of tokens used",
-                "example": 319
+                "example": 8
               }
             },
             "description": "Token usage information for the request"

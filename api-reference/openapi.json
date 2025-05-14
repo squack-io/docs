@@ -144,6 +144,7 @@
     },
     "/v1/code/rank": {
       "post": {
+        "deprecated": true,
         "description": "List files in your codebase in order of relevance to a user's query.",
         "servers": [
           {

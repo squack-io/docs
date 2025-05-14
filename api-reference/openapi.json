@@ -649,7 +649,7 @@
               "total_tokens": {
                 "type": "integer",
                 "description": "Total number of tokens used",
-                "example": 319
+                "example": 96
               }
             },
             "description": "Token usage information for the request"

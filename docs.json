@@ -40,8 +40,20 @@
           {
             "group": "Model Guides",
             "pages": [
-              "docs/instant-apply",
-              "docs/code-reranker"
+              {
+                "group": "Instant Apply",
+                "pages": [
+                  "docs/instant-apply/overview",
+                  "docs/instant-apply/workflow",
+                  "docs/instant-apply/agent"
+                ]
+              },
+              {
+                "group": "Code Reranker",
+                "pages": [
+                  "docs/code-reranker/overview"
+                ]
+              }
             ]
           },
           {

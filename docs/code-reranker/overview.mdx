@@ -1,0 +1,48 @@
+---
+title: 'Overview'
+---
+
+Given a user request for how to change a codebase, you want to retrieve only the files relevant to implementing that request.
+
+This is important for two reasons:
+
+- Polluting the context window with irrelevant files makes the generated code worse.
+- The fewer files you pass in, the more you save on input tokens.
+
+We trained our reranker on hundreds of thousands of user query and code pairs to make it best in class for AI codegen applications.
+
+## Accuracy Benchmark
+
+We evaluated our model on two retrieval benchmarks -- an inhouse dataset consisting of query/codebase pairs for prompt-to-app tasks, and a more general dataset consisting of open source GitHub PRs.
+
+Our reranker is SoTA for both:
+
+![Relace Reranker Recall@k](/images/relace_reranker_accuracy_graph.png)
+
+Recall@k tells you of the _k_ relevant files for the example, how many of those relevant files were ranked in the top _k_ results.
+
+For codegen, high recall is essential because failure to pass relevant files into context entirely breaks the generation.
+
+## Choosing a Relevance Threshold
+
+When deciding on a threshold it kind of depends on which regime you are in:
+
+- Codebase is too big for the context window, and you have to filter down no matter what
+- Codebase fits in the context, but you want to filter to save on input tokens
+
+For case 1, only the ordering matters -- you basically just feed in all the top files up to the model's token limit into context.
+
+For case 2, you need to know more about the relevance score distribution to make a good decision. Here's the chart of distributions for our benchmarking set:
+
+<img
+  src="/images/relace_reranker_relevance_threshold.png"
+  alt="Code Reranker Performance Metrics"
+  width="100%"
+/>
+
+### Recommended Thresholds
+
+- **High Recall (95%+)**: Use threshold ≤ 0.08
+- **Balanced (80-90%)**: Use threshold between 0.20-0.30
+
+For more information on how to integrate this model into your product, see our [API reference](/api-reference/code-reranker/rank-v2).

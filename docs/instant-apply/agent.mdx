@@ -1,0 +1,77 @@
+---
+title: 'Agent Tool Definition'
+---
+
+Agents are continuously running LLMs that process user requests by calling a sequence of tools. Unlike workflows, they are fully autonomous and can be more flexible at coding.
+
+## Why use Agents?
+
+Agents dynamically expand their context by calling tools that explore the codebase, run scripts, and make iterative changes. The are slower and more expensive to run, but can do much more if architected well.
+
+With the right choice of tools, you can optimize the steps the agent takes and cut down on latency/cost.
+
+## Relace Edit Tool
+
+Here's a tool definition we've seen work well as a replacement to Claude 4 Sonnet's string replace editor.
+
+#### Definition
+
+````
+{
+    "name": "semantic_merge_editor",
+    "description": (
+        "Editing tool for viewing, creating and editing files\n"
+        "* State is persistent across command calls and discussions with the user\n"
+        "* If `path` is a file, `view` displays the result of applying `cat -n`.\n"
+        "* If `path` is a directory, `view` lists non-hidden files and directories up to 2 levels deep\n"
+        "* The `create` command cannot be used if the specified `path` already exists as a file\n"
+        "* If a `command` generates a long output, it will be truncated and marked so \n"
+        "* Make sure that you follow the instructions for the `edit` command carefully, abbreviating as much of the unchanged code as possible."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "command": {
+                "type": "string",
+                "description": "The commands to run. Allowed options are: `view`, `create`, `edit`.",
+                "enum": ["view", "create", "edit"],
+            },
+            "file_text": {
+                "type": "string",
+                "description": "Required parameter of `create` command, with the content of the file to be created.",
+            },
+            "path": {
+                "type": "string",
+                "description": "Absolute path to file or directory, e.g. `/repo/file.py` or `/repo`.",
+            },
+            "semantic_edit_snippet": {
+                "type": "string",
+                "description":
+                    """Required parameter of `edit` command. The 'lazified' edit to an existing file.
+                    Here are the rules for formatting the edit snippet, follow them closely:
+
+                    - Abbreviate sections of the code in your response that will remain the same by replacing those sections with a comment like  "// ... rest of code ...", "// ... keep existing code ...", "// ... code remains the same".
+                    - Be very precise with the location of these comments within your edit snippet. A less intelligent model will use the context clues you provide to accurately merge your edit snippet.
+                    - If applicable, it can help to include some concise information about the specific code segments you wish to retain "// ... keep calculateTotalFunction ... ".
+                    - If you plan on deleting a section, you must provide the context to delete it. Some options:
+                        1. If the initial code is ```code \n Block 1 \n Block 2 \n Block 3 \n code```, and you want to remove Block 2, you would output ```// ... keep existing code ... \n Block 1 \n  Block 2 \n // ... rest of code ...```.
+                        2. If the initial code is ```code \n Block \n code```, and you want to remove Block, you can also specify ```// ... keep existing code ... \n // remove Block \n // ... rest of code ...```.
+                    - You must use the comment format applicable to the specific code provided to express these truncations.
+                    - Preserve the indentation and code structure of exactly how you believe the final code will look (do not output lines that will not be in the final code after they are merged).
+                    - Be as length efficient as possible without omitting key context."""
+            },
+            "view_range": {
+                "type": "array",
+                "description": (
+                    "Optional parameter of `view` command when `path` points to a file. "
+                    "If none is given, the full file is shown. "
+                    "If provided, the file will be shown in the indicated line number range, "
+                    "e.g. [11, 12] will show lines 11 and 12. Indexing at 1 to start. "
+                    "Setting `[start_line, -1]` shows all lines from `start_line` to the end of the file."
+                ),
+            },
+        },
+        "required": ["command", "path"],
+    },
+}
+````

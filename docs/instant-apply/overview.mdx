@@ -1,0 +1,78 @@
+---
+title: 'Overview'
+---
+
+When using frontier models like Claude 4 Sonnet to edit your codebase, you're paying premium rates for both valuable changes and unchanged sections alike.
+
+Instant apply is about the separation of concerns -- use heavyweight frontier models for only the new sections of code, and use a lightweight apply model to merge the new into the old.
+
+Our Instant Apply model precisely performs merges while running at **4300 tok/s** on average.
+
+## Code Snippets
+
+To save on cost and latency with Instant Apply, you must prompt the frontier model to create abbreviated snippets. Say we have the following code:
+
+```
+function helloWorld() {
+  console.log("Hello world!");
+}
+```
+
+If we want to add a function below it, the frontier model should only write the new function along with contextual information for where to put it.
+
+```
+// ... keep existing code
+
+function goodbyeWorld() {
+  console.log("Goodbye world!");
+}
+```
+
+We use this structure because it's a natural format _all_ LLMs are naturally good at producing.
+
+Structured diff formats like uDiff or search and replace (S&R) can be applied deterministically, but formatting error rates are high. Even the best models fail 10-15% of the time, and it's much worse for the more economical models like GPT 4o-mini and Haiku.
+
+## Error Rate Comparison
+
+Instant Apply is trained on a wide range of abbreviated edit snippets to make it SoTA for merging code.
+
+![Relace Instant Apply Error Rate Graph](/images/relace_instant_apply_error_rate_graph.png)
+
+For the above plot, we manually measured errors for different models on a set of 100 examples across 5 different programming languages. The rate was calculating by counting instances of the following:
+
+- **Syntax Errors:** Merged code is not syntactically valid. _e.g._ Missing imports, unclosed brackets, etc.
+- **Hallucinations:** Model included code that was not explicitly defined in the edit snippet.
+- **Truncations:** Merged code didn't appropriately fill in a `// ... rest of code ...` block.
+
+Even compared to a very powerful model like Claude 3.5 Sonnet, Relace had over 2x fewer errors.
+
+## Speed Benchmarks
+
+Our model is deployed with speculative decoding on an optimized inference engine that achieves 4300 tok/s on average.
+
+![Relace Instant Apply Speed Graph](/images/relace_instant_apply_speed_graph.png)
+
+This is more than an order of magnitude faster than any Anthropic or OpenAI model, and twice as fast as models run on specialized silicon (_e.g._ Cerebras).
+
+In practice, due to the nature of [speculative decoding](https://arxiv.org/abs/2211.17192) you may observe variance on speed depending on the complexity of the edit snippet. Here's a distribution of latency across n=500 requests:
+
+![Relace Instant Apply Latency Distribution](/images/relace_instant_apply_pdf.png)
+
+## Comparison to Full File Rewrites
+
+If you are currently doing full file rewrites, Instant Apply will save you on average:
+
+- **~3-4x on end-to-end latency**
+- **~3x on cost of output tokens from frontier models**
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.youtube.com/embed/J0-oYyozUZw?rel=0&controls=0&showinfo=0"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+To learn more about how to integrate to your product, see our guides for [workflow](/docs/instant-apply/workflow) and [agent](/docs/instant-apply/agent) pipelines. 

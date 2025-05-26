@@ -1,0 +1,71 @@
+---
+title: 'Quickstart'
+description: 'Retrieve only relevant files from your codebase for a user request'
+---
+
+## Prerequisites
+
+- [Sign up](https://app.relace.ai) for a Relace account.
+- Create an [API key](https://app.relace.ai/settings/api-keys).
+
+## 1. Prepare Your Query and Codebase
+
+Define your user request and collect the files from your codebase that need to be ranked for relevance.
+
+```python
+user_query = "Add a user profile component with avatar and edit functionality"
+codebase_files = [
+    {"filename": "src/components/UserProfile.tsx", "code": "..."},
+    {"filename": "src/types/user.ts", "code": "..."},
+    {"filename": "src/components/Header.tsx", "code": "..."},
+    # ... more files
+]
+```
+
+## 2. Call the Code Reranker API
+
+Send your query and codebase to the reranker to get relevance scores for each file.
+
+```python
+import requests
+
+url = "https://api.relace.ai/v1/code/rerank"
+api_key = "[YOUR_API_KEY]"
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "query": user_query,
+    "files": codebase_files,
+    "token_limit": 200000,  # Set to your model's context limit
+}
+
+response = requests.post(url, headers=headers, json=data)
+ranked_files = response.json()
+```
+
+## 3. Parse Ranked Results from Response
+
+The API returns files ranked by relevance with scores between 0 and 1 up to the token limit you set.
+
+```json
+[
+  {
+    "filename": "src/components/UserProfile.tsx",
+    "relevance_score": 0.9598
+  },
+  {
+    "filename": "src/types/user.ts",
+    "relevance_score": 0.0321
+  },
+  {
+    "filename": "src/components/Header.tsx",
+    "relevance_score": 0.0014
+  }
+]
+```
+
+We recommend additionally filtering out results with relevance score ≤ 0.08. See the [model overview](http://localhost:3000/docs/code-reranker/overview) section for more details.

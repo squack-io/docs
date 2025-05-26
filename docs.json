@@ -43,6 +43,7 @@
               {
                 "group": "Instant Apply",
                 "pages": [
+                  "docs/instant-apply/quickstart",
                   "docs/instant-apply/overview",
                   "docs/instant-apply/workflow",
                   "docs/instant-apply/agent"
@@ -51,6 +52,7 @@
               {
                 "group": "Code Reranker",
                 "pages": [
+                  "docs/code-reranker/quickstart",
                   "docs/code-reranker/overview"
                 ]
               }

@@ -1,5 +1,5 @@
 ---
-title: 'Overview'
+title: 'Model Overview'
 ---
 
 Given a user request for how to change a codebase, you want to retrieve only the files relevant to implementing that request.
@@ -15,34 +15,58 @@ We trained our reranker on hundreds of thousands of user query and code pairs to
 
 We evaluated our model on two retrieval benchmarks -- an inhouse dataset consisting of query/codebase pairs for prompt-to-app tasks, and a more general dataset consisting of open source GitHub PRs.
 
-Our reranker is SoTA for both:
-
 ![Relace Reranker Recall@k](/images/relace_reranker_accuracy_graph.png)
 
 Recall@k tells you of the _k_ relevant files for the example, how many of those relevant files were ranked in the top _k_ results.
 
 For codegen, high recall is essential because failure to pass relevant files into context entirely breaks the generation.
 
+## Comparison to Gemeni 2.0 Flash-Lite
+
+Many people start doing retrieval by just passing the query/codebase pair into a model with a huge context window, like Gemeni Flash-Lite, and use a prompt to score the relevance of each file.
+
+We beat the accuracy of Gemeni 2.0 Flash-Lite at 2x the speed and 2/3 the cost.
+
+![Relace Reranker vs. Gemeni 2.0 Flash-Lite](/images/relace_vs_gemini_comparison.png)
+
 ## Choosing a Relevance Threshold
 
-When deciding on a threshold it kind of depends on which regime you are in:
+Our code reranker returns a list of objects with filename and relevance score, like this:
+
+```json
+[
+  {
+    "filename": "src/components/UserProfile.tsx",
+    "relevance_score": 0.9598
+  },
+  {
+    "filename": "src/types/user.ts",
+    "relevance_score": 0.0321
+  },
+  {
+    "filename": "src/components/Header.tsx",
+    "relevance_score": 0.0014
+  }
+]
+```
+
+You'll need to choose an appropriate threshold based on the regime you are in:
 
 - Codebase is too big for the context window, and you have to filter down no matter what
 - Codebase fits in the context, but you want to filter to save on input tokens
 
 For case 1, only the ordering matters -- you basically just feed in all the top files up to the model's token limit into context.
 
-For case 2, you need to know more about the relevance score distribution to make a good decision. Here's the chart of distributions for our benchmarking set:
+We have a `token_limit` parameter to make this easy. Just set it to the context length of your generation model.
 
-<img
-  src="/images/relace_reranker_relevance_threshold.png"
-  alt="Code Reranker Performance Metrics"
-  width="100%"
-/>
+For case 2, you set a relevance threshold based on the recall you want to hit.
 
-### Recommended Thresholds
+| Strategy | Recall | Threshold | Token Savings |
+|:---------|:-------|:----------|:--------------|
+| Conservative | 99%+ | ≤ 0.02 | ~25% |
+| Balanced | 95%+ | ≤ 0.08 | ~45% |
+| Aggressive | 80-90% | 0.15-0.25 | up to 70% |
 
-- **High Recall (95%+)**: Use threshold ≤ 0.08
-- **Balanced (80-90%)**: Use threshold between 0.20-0.30
+For more code examples and endpoint info, see the [API reference](/api-reference/code-reranker/rank-v2).
 
-For more information on how to integrate this model into your product, see our [API reference](/api-reference/code-reranker/rank-v2).
+

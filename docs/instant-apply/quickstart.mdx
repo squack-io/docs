@@ -1,0 +1,66 @@
+---
+title: 'Quickstart'
+description: 'Switch from full file rewrites to snippets + apply in 5 minutes'
+---
+
+## Prerequisites
+
+- [Sign up](https://app.relace.ai) for a Relace account.
+- Create an [API key](https://app.relace.ai/settings/api-keys).
+
+## 1. Generate Code Snippets
+
+Add instructions for formatting edits somewhere in the system prompt for your LLM of choice.
+
+````
+  - Abbreviate sections of the code in your response that will remain the same by replacing those sections with a comment like  "// ... rest of code ...", "// ... keep existing code ...", "// ... code remains the same".
+  - Be precise with the location of these comments within your edit snippet. A less intelligent model will use the context clues you provide to accurately merge your edit snippet.
+  - If applicable, it can help to include some concise information about the specific code segments you wish to retain "// ... keep calculateTotalFunction ... ".
+  - If you plan on deleting a section, you must provide the context to delete it. Some options:
+      1. If the initial code is ```code \n Block 1 \n Block 2 \n Block 3 \n code```, and you want to remove Block 2, you would output ```// ... keep existing code ... \n Block 1 \n  Block 2 \n // ... rest of code ...```.
+      2. If the initial code is ```code \n Block \n code```, and you want to remove Block, you can also specify ```// ... keep existing code ... \n // remove Block \n // ... rest of code ...```.
+  - You must use the comment format applicable to the specific code provided to express these truncations.
+  - Preserve the indentation and code structure of exactly how you believe the final code will look (do not output lines that will not be in the final code after they are merged).
+  - Be as length efficient as possible without omitting key context.
+````
+
+## 2. Merge with Instant Apply
+
+Pass the abbreviated edit snippet along with the initial code to the Instant Apply endpoint.
+
+```python
+import requests
+
+url = "https://instantapply.endpoint.relace.run/v1/code/apply"
+api_key = "[YOUR_API_KEY]"
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "initialCode": initial_code,
+    "editSnippet": edit_snippet,
+}
+
+response = requests.post(url, headers=headers, json=data)
+return response.json()
+```
+
+## 3. Parse Final Code from Response
+
+Collect the merged code from the response json.
+
+```json
+{
+  "mergedCode": merged_code,
+  "usage": {
+    "prompt_tokens": prompt_tokens,
+    "completion_tokens": completion_tokens,
+    "total_tokens": total_tokens
+  }
+}
+```
+
+For more code examples and options see our [API reference](/api-reference/instant-apply/apply).

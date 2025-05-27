@@ -29,7 +29,7 @@ Send your query and codebase to the reranker to get relevance scores for each fi
 ```python
 import requests
 
-url = "https://api.relace.ai/v1/code/rerank"
+url = "ttps://ranker.endpoint.relace.run/v2/code/rank"
 api_key = "[YOUR_API_KEY]"
 
 headers = {
@@ -39,7 +39,7 @@ headers = {
 
 data = {
     "query": user_query,
-    "files": codebase_files,
+    "codebase": codebase_files,
     "token_limit": 200000,  # Set to your model's context limit
 }
 

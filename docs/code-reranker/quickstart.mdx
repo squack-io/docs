@@ -40,7 +40,7 @@ headers = {
 data = {
     "query": user_query,
     "codebase": codebase_files,
-    "token_limit": 200000,  # Set to your model's context limit
+    "token_limit": 150000,  # Set to your model's context limit with buffer room for system prompt
 }
 
 response = requests.post(url, headers=headers, json=data)

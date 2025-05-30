@@ -54,7 +54,7 @@
                 "group": "Code Reranker",
                 "pages": [
                   "docs/code-reranker/quickstart",
-                  "docs/code-reranker/overview",
+                  "docs/code-reranker/overview"
                 ]
               }
             ]

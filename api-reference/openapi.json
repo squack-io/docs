@@ -669,6 +669,12 @@
             "items": {
               "type": "string"
             }
+          },
+          "output_dtype": {
+            "type": "string",
+            "description": "Data type of the output embedding vectors. The `binary` quantization results in more compact embeddings with only a small loss in retrieval performance. See [HuggingFace blog post](https://huggingface.co/blog/embedding-quantization#binary-quantization) for details.",
+            "enum": ["float", "binary"],
+            "default": "float"
           }
         }
       },

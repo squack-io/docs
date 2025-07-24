@@ -1,0 +1,115 @@
+---
+title: 'Quickstart'
+description: 'Create codebase vector embeddings for semantic search'
+---
+
+## Prerequisites
+
+- [Sign up](https://app.relace.ai) for a Relace account.
+- Create an [API key](https://app.relace.ai/settings/api-keys).
+
+## 1. Prepare Your Inputs
+
+Decide what code snippets or text you want to embed. You can embed multiple strings in a single request.
+
+```python
+inputs = [
+    "def add(a, b): return a + b",
+    "class User: pass",
+    # ... more code or text
+]
+```
+
+## 2. Call the Embeddings API
+
+Send your inputs to the embeddings endpoint to get vector representations.
+
+```python
+import requests
+
+url = "https://embeddings.endpoint.relace.run/v1/code/embed"
+api_key = "[YOUR_API_KEY]"
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "model": "relace-embed-v1",
+    "input": inputs,
+    # Optional: "output_dtype": "float"  # or "binary"
+}
+
+response = requests.post(url, headers=headers, json=data)
+embeddings = response.json()
+```
+
+## 3. Parse Embedding Results
+
+The API returns an array of embeddings, one for each input string, and usage info.
+
+```json
+{
+  "results": [
+    { "index": 0, "embedding": [0.123, 0.456, 0.789] },
+    { "index": 1, "embedding": [0.234, 0.567, 0.89] }
+  ],
+  "usage": {
+    "total_tokens": 8
+  }
+}
+```
+
+For more details and options, see the [API reference](/api-reference/embed-code/embed).
+
+## 4. Store and Search with a Vector Database
+
+Once you have your embeddings, you can store them in a vector database such as [Turbopuffer](https://turbopuffer.com/) or [Pinecone](https://www.pinecone.io/). These databases are designed for efficient similarity search over large collections of vectors.
+
+### Example: Storing Embeddings
+
+Most vector databases let you upsert (insert or update) vectors with an ID and metadata:
+
+```python
+import pinecone
+
+# Initialize Pinecone (example)
+pinecone.init(api_key="[PINECONE_API_KEY]", environment="us-west1-gcp")
+index = pinecone.Index("my-embeddings-index")
+
+# Prepare vectors for upsert
+vectors = [
+    (f"code-{r['index']}", r["embedding"], {"source": inputs[r["index"]]})
+    for r in embeddings["results"]
+]
+
+# Upsert to Pinecone
+index.upsert(vectors)
+```
+
+Turbopuffer and other vector databases have similar APIs for inserting vectors.
+
+### Example: Semantic Search with a User Query
+
+To search, embed the user query using the same API, then query the vector database for the most similar vectors (using cosine similarity or the database's default metric):
+
+```python
+# Embed the user query
+query = "How do I add two numbers?"
+query_data = {
+    "model": "relace-embed-v1",
+    "input": [query]
+}
+query_response = requests.post(url, headers=headers, json=query_data)
+query_embedding = query_response.json()["results"][0]["embedding"]
+
+# Query Pinecone for similar code
+results = index.query(vector=query_embedding, top_k=5, include_metadata=True)
+for match in results["matches"]:
+    print(f"Score: {match['score']}, Source: {match['metadata']['source']}")
+```
+
+This will return the most relevant code snippets or documents from your database, ranked by similarity to the user query.
+
+For more details, see the [Turbopuffer docs](https://docs.turbopuffer.com/) or [Pinecone docs](https://docs.pinecone.io/).

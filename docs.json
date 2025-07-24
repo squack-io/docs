@@ -56,6 +56,12 @@
                   "docs/code-reranker/quickstart",
                   "docs/code-reranker/overview"
                 ]
+              },
+              {
+                "group": "Embeddings Model",
+                "pages": [
+                  "docs/embeddings/quickstart"
+                ]
               }
             ]
           },
@@ -86,9 +92,9 @@
             ]
           },
           {
-            "group": "Code Embedder",
+            "group": "Embeddings Model",
             "pages": [
-              "api-reference/embed-code/embed"
+              "api-reference/embeddings/embed"
             ]
           }
         ]

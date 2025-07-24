@@ -6,7 +6,7 @@ When using frontier models like Claude 4 Sonnet to edit your codebase, you're pa
 
 Instant apply is about the separation of concerns -- use heavyweight frontier models for only the new sections of code, and use a lightweight apply model to merge the new into the old.
 
-Our Instant Apply model precisely performs merges while running at **4300 tok/s** on average.
+Our Instant Apply model precisely performs merges while running at **10,000 tok/s** on average.
 
 ## Code Snippets
 
@@ -48,7 +48,7 @@ Even compared to a very powerful model like Claude 3.5 Sonnet, Relace had over 2
 
 ## Speed Benchmarks
 
-Our model is deployed with speculative decoding on an optimized inference engine that achieves 4300 tok/s on average.
+Our model is deployed with speculative decoding on an optimized inference engine that achieves >10,000 tok/s on average.
 
 ![Relace Instant Apply Speed Graph](/images/relace_instant_apply_speed_graph.png)
 

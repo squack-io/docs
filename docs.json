@@ -94,7 +94,7 @@
           {
             "group": "Embeddings Model",
             "pages": [
-              "api-reference/embeddings/embed"
+              "api-reference/embed-code/embed"
             ]
           }
         ]

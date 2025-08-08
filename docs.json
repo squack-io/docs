@@ -34,7 +34,11 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["docs/introduction", "docs/agent-guide"]
+            "pages": [
+              "docs/introduction",
+              "docs/agent-guide",
+              "docs/two-stage-retrieval"
+            ]
           },
           {
             "group": "Model Guides",

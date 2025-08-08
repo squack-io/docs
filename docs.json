@@ -34,9 +34,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": [
-              "docs/introduction"
-            ]
+            "pages": ["docs/introduction"]
           },
           {
             "group": "Model Guides",
@@ -59,18 +57,13 @@
               },
               {
                 "group": "Embeddings Model",
-                "pages": [
-                  "docs/embeddings/quickstart"
-                ]
+                "pages": ["docs/embeddings/quickstart"]
               }
             ]
           },
           {
             "group": "Pricing",
-            "pages": [
-              "docs/pricing",
-              "docs/policies"
-            ]
+            "pages": ["docs/pricing", "docs/policies"]
           }
         ]
       },
@@ -80,22 +73,15 @@
         "groups": [
           {
             "group": "Instant Apply",
-            "pages": [
-              "api-reference/instant-apply/apply"
-            ]
+            "pages": ["api-reference/instant-apply/apply"]
           },
           {
             "group": "Code Reranker",
-            "pages": [
-              "api-reference/code-reranker/rank-v1",
-              "api-reference/code-reranker/rank-v2"
-            ]
+            "pages": ["api-reference/code-reranker/rank-v2"]
           },
           {
             "group": "Embeddings Model",
-            "pages": [
-              "api-reference/embed-code/embed"
-            ]
+            "pages": ["api-reference/embed-code/embed"]
           }
         ]
       }

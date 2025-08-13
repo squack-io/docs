@@ -68,9 +68,7 @@
           {
             "group": "Repos",
             "pages": [
-              "docs/repos/quickstart",
-              "docs/repos/overview",
-              "docs/repos/github-sync"
+              "docs/repos/quickstart"
             ]
           },
           {
@@ -121,11 +119,12 @@
                   "api-reference/repos/list",
                   "api-reference/repos/create",
                   "api-reference/repos/update",
-                  "api-reference/repos/delete"
+                  "api-reference/repos/delete",
+                  "api-reference/repos/clone"
                 ]
               },
               {
-                "group": "Code Retrieval",
+                "group": "Semantic Retrieval",
                 "pages": [
                   "api-reference/repos/retrieve",
                   "api-reference/repos/ask",

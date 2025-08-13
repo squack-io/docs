@@ -1,0 +1,72 @@
+---
+title: 'Clone Repo'
+api: 'GET https://api.relace.ai/v1/repo/{repo_id}/clone'
+description: 'Clone a repository and get all its files'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  Repo ID
+</ParamField>
+
+## Response
+
+<ResponseField name="files" type="array">
+  Array of all files in the repository
+  
+  <Expandable title="properties" defaultOpen={false}>
+    <ResponseField name="filename" type="string">
+      Path to the file within the repo
+    </ResponseField>
+    
+    <ResponseField name="content" type="string">
+      Full content of the file
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/clone \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/clone"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "files": [
+    {
+      "filename": "src/main.py",
+      "content": "def main():\n    print('Hello World!')\n\nif __name__ == '__main__':\n    main()"
+    },
+    {
+      "filename": "README.md",
+      "content": "# My Project\n\nThis is a sample project."
+    },
+    {
+      "filename": "requirements.txt",
+      "content": "requests==2.28.1\nflask==2.2.2"
+    }
+  ]
+}
+```
+
+</ResponseExample>

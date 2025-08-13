@@ -1,0 +1,165 @@
+---
+title: 'Update Repo'
+api: 'POST https://api.relace.ai/v1/repo/{repo_id}/update'
+description: 'Update repo content with files or sync from Git.'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  Repo ID
+</ParamField>
+
+## Request Body
+
+<ParamField body="source" type="object" required>
+  Source for updating the repo content
+
+  <Expandable title="properties" defaultOpen={false}>
+
+  <ParamField body="type" type="string" required>
+    The source type: `"files"` for file updates or `"git"` for Git sync
+  </ParamField>
+
+  <Tabs>
+    <Tab title="Git Source">
+      <ParamField body="url" type="string" required>
+        Git repo URL to sync from
+      </ParamField>
+      
+      <ParamField body="branch" type="string">
+        Specific branch to sync (optional)
+      </ParamField>
+      
+      <ParamField body="commit" type="string">
+        Specific commit hash to sync (optional)
+      </ParamField>
+      
+      <ParamField body="depth" type="integer">
+        Depth of Git history to fetch (optional)
+      </ParamField>
+    </Tab>
+    
+    <Tab title="Files Overwrite">
+      <ParamField body="mode" type="string" required>
+        Set to `"overwrite"` to replace all repo content
+      </ParamField>
+      
+      <ParamField body="files" type="array" required>
+        Array of file objects to overwrite the repo with
+        
+        <Expandable title="properties" defaultOpen={false}>
+        <ParamField body="filename" type="string" required>
+          The path and filename for the file
+        </ParamField>
+        
+        <ParamField body="code" type="string" required>
+          The content of the file
+        </ParamField>
+        </Expandable>
+      </ParamField>
+    </Tab>
+    
+    <Tab title="Files Diff">
+      <ParamField body="mode" type="string" required>
+        Set to `"diff"` to apply specific file operations
+      </ParamField>
+      
+      <ParamField body="operations" type="array" required>
+        Array of file operations to perform
+        
+        <Expandable title="properties" defaultOpen={false}>
+        <ParamField body="operation" type="string" required>
+          Operation type: `"upsert"` to create/update or `"delete"` to remove
+        </ParamField>
+        
+        <ParamField body="filename" type="string" required>
+          The path and filename for the operation
+        </ParamField>
+        
+        <ParamField body="code" type="string">
+          File content (required for "upsert" operations)
+        </ParamField>
+        </Expandable>
+      </ParamField>
+    </Tab>
+  </Tabs>
+
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="commit_id" type="string">
+  The commit ID of the updated repo
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": {
+      "type": "files",
+      "mode": "diff",
+      "operations": [
+        {
+          "operation": "upsert",
+          "filename": "src/search.ts",
+          "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+        },
+        {
+          "operation": "delete",
+          "filename": "old-file.js"
+        }
+      ]
+    }
+  }'
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "files",
+        "mode": "diff",
+        "operations": [
+            {
+                "operation": "upsert",
+                "filename": "src/search.ts",
+                "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+            },
+            {
+                "operation": "delete",
+                "filename": "old-file.js"
+            }
+        ]
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "commit_id": "abc123def456"
+}
+```
+
+</ResponseExample>

@@ -1,0 +1,255 @@
+---
+title: 'Quickstart'
+description: 'Set up Relace Repos as your AI agent source control system with built-in semantic search'
+---
+
+## Prerequisites
+
+- [Sign up](https://app.relace.ai) for a Relace account.
+- Create an [API key](https://app.relace.ai/settings/api-keys).
+- Set up a [Supabase](https://supabase.com) project for database tracking.
+
+## 0. Set Up Supabase Database
+
+Before creating repositories, you'll need to set up a Supabase database to track your repos and their metadata.
+
+### Create Supabase Project
+
+1. Go to [Supabase](https://supabase.com) and sign up or log in
+2. Create a new project for your Relace Repos tracking
+3. Note down your project URL and anon key for API access
+
+### Set Up Database Table
+
+Create a table called `repos` with the following minimum required fields:
+
+- **id**: Unique identifier for each repository (auto-generated)
+- **created_at**: Timestamp when the repository was created
+- **user_id**: Identifier for the user who owns the repository
+- **metadata**: JSON field to store additional repository information
+- **remote**: URL or identifier for the remote repository (e.g., GitHub URL)
+- **remote_branch**: The branch name being tracked (e.g., "main", "develop")
+
+### Additional Recommended Fields
+
+Consider adding these fields for better repository management:
+
+- **name**: Human-readable repository name
+- **description**: Repository description
+- **visibility**: Public or private repository setting
+- **status**: Current status (active, archived, syncing)
+- **last_synced**: Timestamp of last sync operation
+- **file_count**: Total number of files in the repository
+
+## 1. Create a New Repository
+
+Start by creating a new repository in Relace Repos. This will serve as your AI agent's source control system.
+
+```python
+import requests
+
+url = "https://api.relace.ai/v1/repos"
+api_key = "[YOUR_API_KEY]"
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "name": "my-ai-project",
+    "description": "AI agent codebase with semantic search capabilities",
+    "visibility": "private"  # or "public"
+}
+
+response = requests.post(url, headers=headers, json=data)
+repo = response.json()
+```
+
+## 2. Sync with GitHub (Optional)
+
+If you have an existing GitHub repository, you can sync it with Relace Repos to get started quickly.
+
+```python
+# Sync an existing GitHub repository
+sync_url = f"https://api.relace.ai/v1/repos/{repo['id']}/sync"
+sync_data = {
+    "github_url": "https://github.com/username/repository-name",
+    "branch": "main"
+}
+
+sync_response = requests.post(sync_url, headers=headers, json=sync_data)
+sync_status = sync_response.json()
+```
+
+## 3. Upload Code Files
+
+For repositories without GitHub sync, you can manually upload your code files. Relace Repos will automatically handle chunking and indexing.
+
+```python
+# Upload a single file
+upload_url = f"https://api.relace.ai/v1/repos/{repo['id']}/files"
+file_data = {
+    "path": "src/main.py",
+    "content": "def hello_world():\n    print('Hello from AI agent!')\n",
+    "language": "python"
+}
+
+upload_response = requests.post(upload_url, headers=headers, json=file_data)
+
+# Upload multiple files in batch
+batch_data = {
+    "files": [
+        {
+            "path": "src/utils.py",
+            "content": "def helper_function():\n    return 'Helper output'\n",
+            "language": "python"
+        },
+        {
+            "path": "README.md",
+            "content": "# My AI Project\n\nThis is a sample project.",
+            "language": "markdown"
+        }
+    ]
+}
+
+batch_response = requests.post(upload_url, headers=headers, json=batch_data)
+```
+
+## 4. Perform Semantic Search
+
+Once your code is indexed, you can perform semantic search queries to find relevant code snippets.
+
+```python
+# Search for relevant code
+search_url = f"https://api.relace.ai/v1/repos/{repo['id']}/search"
+search_data = {
+    "query": "How do I implement user authentication?",
+    "max_results": 10,
+    "include_metadata": True
+}
+
+search_response = requests.post(search_url, headers=headers, json=search_data)
+search_results = search_response.json()
+```
+
+## 5. Parse Search Results
+
+The search API returns relevant code snippets with metadata and relevance scores.
+
+```json
+{
+  "results": [
+    {
+      "file_path": "src/auth.py",
+      "content": "def authenticate_user(username, password):\n    # ... authentication logic ...",
+      "score": 0.95,
+      "metadata": {
+        "language": "python",
+        "last_modified": "2024-01-15T10:30:00Z"
+      }
+    },
+    {
+      "file_path": "src/models/user.py",
+      "content": "class User:\n    def __init__(self, username):\n        self.username = username",
+      "score": 0.87,
+      "metadata": {
+        "language": "python",
+        "last_modified": "2024-01-15T09:15:00Z"
+      }
+    }
+  ],
+  "total_results": 5
+}
+```
+
+## 6. Update Code Files
+
+Make changes to your code files through the Repos API. Relace Repos will automatically re-index the updated content.
+
+```python
+# Update an existing file
+update_url = f"https://api.relace.ai/v1/repos/{repo['id']}/files/src/main.py"
+update_data = {
+    "content": "def hello_world():\n    print('Hello from updated AI agent!')\n    print('Now with enhanced functionality!')\n",
+    "message": "Enhanced hello world function"
+}
+
+update_response = requests.put(update_url, headers=headers, json=update_data)
+```
+
+## 7. Get Repository Status
+
+Check the current status of your repository, including indexing progress and file counts.
+
+```python
+# Get repository information
+status_url = f"https://api.relace.ai/v1/repos/{repo['id']}"
+status_response = requests.get(status_url, headers=headers)
+status = status_response.json()
+
+print(f"Repository: {status['name']}")
+print(f"Total files: {status['file_count']}")
+print(f"Indexing status: {status['indexing_status']}")
+print(f"Last indexed: {status['last_indexed']}")
+```
+
+## 8. Store Repository Data in Supabase
+
+After creating or updating repositories, store the data in your Supabase database for tracking and management.
+
+```python
+import os
+from supabase import create_client, Client
+
+# Initialize Supabase client
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_ANON_KEY")
+supabase: Client = create_client(supabase_url, supabase_key)
+
+# Store repository data
+repo_data = {
+    "user_id": "your_user_id",
+    "name": repo["name"],
+    "description": repo["description"],
+    "visibility": repo["visibility"],
+    "remote": repo.get("github_url", None),
+    "remote_branch": repo.get("branch", "main"),
+    "metadata": {
+        "relace_repo_id": repo["id"],
+        "file_count": status["file_count"],
+        "indexing_status": status["indexing_status"],
+        "last_indexed": status["last_indexed"]
+    }
+}
+
+# Insert into Supabase
+result = supabase.table("repos").insert(repo_data).execute()
+```
+
+## 9. Query Repository Data from Supabase
+
+Retrieve and manage your repositories using Supabase queries.
+
+```python
+# Get all repositories for a user
+user_repos = supabase.table("repos").select("*").eq("user_id", "your_user_id").execute()
+
+# Get repositories by status
+active_repos = supabase.table("repos").select("*").eq("status", "active").execute()
+
+# Search repositories by name
+search_results = supabase.table("repos").select("*").ilike("name", "%ai%").execute()
+
+# Update repository status
+supabase.table("repos").update({"status": "syncing"}).eq("id", repo_id).execute()
+```
+
+## Next Steps
+
+- Learn about [GitHub sync](/docs/repos/github-sync) for existing repositories
+- Explore the [API reference](/api-reference/repos) for all available endpoints
+- Set up automated indexing with webhooks for continuous updates
+- Configure Supabase Row Level Security (RLS) for multi-user access control
+
+For more details and advanced usage patterns, see our [overview guide](/docs/repos/overview).

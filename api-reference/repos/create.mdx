@@ -1,0 +1,133 @@
+---
+title: 'Create Repo'
+api: 'POST https://api.relace.ai/v1/repo'
+description: 'Create a new repo from files or a GitHub repo.'
+---
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  The name of the repo to create
+</ParamField>
+
+<ParamField body="source" type="object">
+  Optional object to initialize the repo from existing source
+
+  <Expandable title="properties" defaultOpen={false}>
+
+  <ParamField body="type" type="string" required>
+    The source type: `"files"` for direct file upload or `"git"` for Git repo
+  </ParamField>
+
+  <Tabs>
+    <Tab title="From Files">
+      <ParamField body="files" type="array" required>
+        Array of file objects to include in the repo
+        
+        <Expandable title="properties" defaultOpen={false}>
+        <ParamField body="filename" type="string" required>
+          The path and filename for the file
+        </ParamField>
+        
+        <ParamField body="code" type="string" required>
+          The content of the file
+        </ParamField>
+        </Expandable>
+      </ParamField>
+    </Tab>
+    
+    <Tab title="From Git Repo">
+      <ParamField body="url" type="string" required>
+        Git repo URL to clone from
+      </ParamField>
+      
+      <ParamField body="branch" type="string">
+        Specific branch to clone (optional)
+      </ParamField>
+      
+      <ParamField body="commit" type="string">
+        Specific commit hash to clone (optional)
+      </ParamField>
+      
+      <ParamField body="depth" type="integer">
+        Depth of Git history to clone (optional)
+      </ParamField>
+    </Tab>
+  </Tabs>
+
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="repo_id" type="string">
+  Unique identifier for the newly created repo
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.relace.ai/v1/repo \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-codebase",
+    "source": {
+      "type": "files",
+      "files": [
+        {
+          "filename": "src/search.ts",
+          "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+        },
+        {
+          "filename": "src/types.ts", 
+          "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
+        }
+        // ... more files
+      ]
+    }
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.relace.ai/v1/repo"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "name": "my-codebase",
+    "source": {
+        "type": "files",
+        "files": [
+            {
+                "filename": "src/search.ts",
+                "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+            },
+            {
+                "filename": "src/types.ts",
+                "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
+            }
+            # ... more files
+        ]
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "repo_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+</ResponseExample>

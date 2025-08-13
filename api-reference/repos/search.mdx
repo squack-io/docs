@@ -1,0 +1,102 @@
+---
+title: 'Search'
+api: 'POST https://api.relace.ai/v1/repo/{repo_id}/search'
+description: 'Search for specific text patterns in repo files'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  Repo ID
+</ParamField>
+
+## Request Body
+
+<ParamField body="query" type="string" required>
+  Text pattern to search for
+</ParamField>
+
+
+## Response
+
+<ResponseField name="results" type="array">
+  Array of search results with line matches
+  
+  <Expandable title="properties" defaultOpen={false}>
+    <ResponseField name="filename" type="string">
+      Path to the file within the repo
+    </ResponseField>
+    
+    <ResponseField name="line_number" type="integer">
+      Line number where the match was found
+    </ResponseField>
+    
+    <ResponseField name="line_content" type="string">
+      Content of the matching line
+    </ResponseField>
+    
+    <ResponseField name="match_start" type="integer">
+      Starting position of the match in the line
+    </ResponseField>
+    
+    <ResponseField name="match_end" type="integer">
+      Ending position of the match in the line
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "authenticate"
+  }'
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/search"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "query": "authenticate"
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "results": [
+    {
+      "filename": "src/auth.py",
+      "line_number": 15,
+      "line_content": "def authenticate_user(username, password):",
+      "match_start": 4,
+      "match_end": 14
+    },
+    {
+      "filename": "src/middleware.py", 
+      "line_number": 28,
+      "line_content": "    # Check if user is authenticated",
+      "match_start": 22,
+      "match_end": 32
+    }
+  ]
+}
+```
+
+</ResponseExample>

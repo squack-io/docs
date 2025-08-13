@@ -1,0 +1,97 @@
+---
+title: 'Retrieve'
+api: 'POST https://api.relace.ai/v1/repo/{repo_id}/retrieve'
+description: 'Two-stage codebase retrieval using semantic search'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  Repo ID
+</ParamField>
+
+## Request Body
+
+<ParamField body="query" type="string" required>
+  Natural language description of what you're looking for
+</ParamField>
+
+<ParamField body="score_threshold" type="number" default="0.0">
+  Minimum relevance score for results (0.0 to 1.0)
+</ParamField>
+
+<ParamField body="token_limit" type="integer" default="8000">
+  Maximum number of tokens to return across all results
+</ParamField>
+
+## Response
+
+<ResponseField name="results" type="array">
+  Array of relevant files and code sections
+  
+  <Expandable title="properties" defaultOpen={false}>
+    <ResponseField name="filename" type="string">
+      Path to the file within the repo
+    </ResponseField>
+    
+    <ResponseField name="score" type="number">
+      Relevance score between 0.0 and 1.0
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/retrieve \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "authentication and user login functionality",
+    "score_threshold": 0.3,
+    "token_limit": 4000
+  }'
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "query": "authentication and user login functionality",
+    "score_threshold": 0.3,
+    "token_limit": 4000
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "results": [
+    {
+      "file_path": "src/auth.py",
+      "content": "def authenticate_user(username, password):\n    \"\"\"Authenticate user credentials against the database.\"\"\"\n    user = User.query.filter_by(username=username).first()\n    if user and bcrypt.check_password_hash(user.password_hash, password):\n        return user\n    return None",
+      "score": 0.94
+    },
+    {
+      "file_path": "src/models/user.py",
+      "content": "class User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    password_hash = db.Column(db.String(128), nullable=False)",
+      "score": 0.87
+    }
+  ]
+}
+```
+
+</ResponseExample>

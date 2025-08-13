@@ -66,6 +66,14 @@
             ]
           },
           {
+            "group": "Repos",
+            "pages": [
+              "docs/repos/quickstart",
+              "docs/repos/overview",
+              "docs/repos/github-sync"
+            ]
+          },
+          {
             "group": "Pricing",
             "pages": [
               "docs/pricing",
@@ -78,6 +86,13 @@
         "anchor": "API Reference",
         "icon": "square-terminal",
         "groups": [
+          {
+            "group": "General",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/errors"
+            ]
+          },
           {
             "group": "Instant Apply",
             "pages": [
@@ -95,6 +110,28 @@
             "group": "Embeddings Model",
             "pages": [
               "api-reference/embed-code/embed"
+            ]
+          },
+          {
+            "group": "Repos",
+            "pages": [
+              {
+                "group": "Source Control",
+                "pages": [
+                  "api-reference/repos/list",
+                  "api-reference/repos/create",
+                  "api-reference/repos/update",
+                  "api-reference/repos/delete"
+                ]
+              },
+              {
+                "group": "Code Retrieval",
+                "pages": [
+                  "api-reference/repos/retrieve",
+                  "api-reference/repos/ask",
+                  "api-reference/repos/search"
+                ]
+              }
             ]
           }
         ]

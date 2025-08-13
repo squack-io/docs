@@ -1,0 +1,56 @@
+---
+title: 'Overview'
+description: 'Learn about how Relace Repos offers convenient source control for your AI agent with built in state-of-the-art code retrieval.'
+---
+
+## Introduction
+
+Relace Repos is a version control system specifically designed for AI-powered code generation. While traditional Git works well for human developers, AI agents have a different set of requirements for optimized code retrieval and edits in their sandboxed execution environments.
+
+- Semantic search that maintains low latency on large codebases.
+- Lightweight read/write operations to access code within sandboxes.
+- Multi-tenancy that scales to millions of repositories across thousands of users.
+
+
+
+## Built-in Two-Stage Retrieval
+
+Setting up codebase indexing is notoriously painful. You need to configure embedding models, set up vector databases, handle chunking strategies, manage metadata extraction, and constantly tune retrieval parameters. And that's before you even get to the reranking layer.
+
+Relace Repos handles all of this complexity for you. Our two-stage retrieval system automatically:
+
+**Stage 1: Intelligent Indexing**
+
+- Automatically chunks your code into meaningful segments
+- Generates semantic embeddings using our optimized models
+- Handles file type detection and language-specific parsing
+- Manages incremental updates as your codebase evolves
+
+**Stage 2: Smart Reranking**
+
+- Our [Code Reranker](/docs/code-reranker/quickstart) understands code context and dependencies
+- Automatically reorders results based on relevance to the AI agent's task
+- Filters out irrelevant code snippets and focuses on actionable results
+
+No more wrestling with embedding configurations or debugging chunking strategies. Just point Relace Repos at your repository and get production-ready semantic search in minutes.
+
+## Next Steps
+
+For more details on how to set up Relace Repos as your agents source control system see our [quickstart guide](/docs/repos/quickstart).
+
+<CardGroup cols={2}>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/docs/source-control/quickstart"
+  >
+    Get up and running with Relace Source Control in minutes
+  </Card>
+  <Card
+    title="GitHub Sync"
+    icon="github"
+    href="/docs/source-control/github-sync"
+  >
+    Learn how to sync your existing GitHub repositories
+  </Card>
+</CardGroup>

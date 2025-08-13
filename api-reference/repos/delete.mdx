@@ -1,0 +1,45 @@
+---
+title: 'Delete Repo'
+api: 'DELETE https://api.relace.ai/v1/repo/{repo_id}'
+description: 'Delete a repo and all its associated data'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  UUID of the repo to delete
+</ParamField>
+
+## Response
+
+This endpoint returns no content on successful deletion.
+
+<RequestExample>
+
+```bash cURL
+curl -X DELETE https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.delete(url, headers=headers)
+print(f"Status: {response.status_code}")
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```bash Response
+204 No Content
+```
+
+</ResponseExample>

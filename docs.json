@@ -127,8 +127,7 @@
                 "group": "Semantic Retrieval",
                 "pages": [
                   "api-reference/repos/retrieve",
-                  "api-reference/repos/ask",
-                  "api-reference/repos/search"
+                  "api-reference/repos/ask"
                 ]
               }
             ]

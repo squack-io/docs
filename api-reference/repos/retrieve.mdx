@@ -16,12 +16,16 @@ description: 'Two-stage codebase retrieval using semantic search'
   Natural language description of what you're looking for
 </ParamField>
 
-<ParamField body="score_threshold" type="number" default="0.0">
+<ParamField body="score_threshold" type="number" default="0.3">
   Minimum relevance score for results (0.0 to 1.0)
 </ParamField>
 
-<ParamField body="token_limit" type="integer" default="8000">
+<ParamField body="token_limit" type="integer" default="30000">
   Maximum number of tokens to return across all results
+</ParamField>
+
+<ParamField body="include_content" type="boolean" default="false">
+  Whether to include file content in the response. If false, only filenames and scores are returned.
 </ParamField>
 
 ## Response
@@ -37,6 +41,10 @@ description: 'Two-stage codebase retrieval using semantic search'
     <ResponseField name="score" type="number">
       Relevance score between 0.0 and 1.0
     </ResponseField>
+    
+    <ResponseField name="content" type="string">
+      File content (only included when include_content=true)
+    </ResponseField>
   </Expandable>
 </ResponseField>
 
@@ -50,7 +58,8 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
   -d '{
     "query": "authentication and user login functionality",
     "score_threshold": 0.3,
-    "token_limit": 4000
+    "token_limit": 30000,
+    "include_content": true
   }'
 ```
 
@@ -66,7 +75,8 @@ headers = {
 data = {
     "query": "authentication and user login functionality",
     "score_threshold": 0.3,
-    "token_limit": 4000
+    "token_limit": 30000,
+    "include_content": True
 }
 
 response = requests.post(url, headers=headers, json=data)
@@ -81,12 +91,12 @@ print(response.json())
 {
   "results": [
     {
-      "file_path": "src/auth.py",
+      "filename": "src/auth.py",
       "content": "def authenticate_user(username, password):\n    \"\"\"Authenticate user credentials against the database.\"\"\"\n    user = User.query.filter_by(username=username).first()\n    if user and bcrypt.check_password_hash(user.password_hash, password):\n        return user\n    return None",
       "score": 0.94
     },
     {
-      "file_path": "src/models/user.py",
+      "filename": "src/models/user.py",
       "content": "class User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    password_hash = db.Column(db.String(128), nullable=False)",
       "score": 0.87
     }

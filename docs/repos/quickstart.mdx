@@ -8,7 +8,7 @@ description: "Transition to Relace Repos as your coding agent's source control s
 - [Sign up](https://app.relace.ai) for a Relace account.
 - Create an [API key](https://app.relace.ai/settings/api-keys).
 
-## 1. Transfer Existing Source to Relace 
+## 1. Transfer Existing Source to Relace
 
 Start by transferring your existing repositories to Relace.
 
@@ -24,7 +24,6 @@ headers = {
 }
 
 data = {
-    "name": "my-existing-project",
     "source": {
         "type": "git",
         "url": "https://github.com/username/repository-name",
@@ -48,13 +47,12 @@ headers = {
 }
 
 data = {
-    "name": "my-existing-project",
     "source": {
         "type": "files",
         "files": [
             {
                 "filename": "src/main.py",
-                "code": "def main():\n    print('Hello from my existing project!')\n\nif __name__ == '__main__':\n    main()"
+                "content": "def main():\n    print('Hello from my existing project!')\n\nif __name__ == '__main__':\n    main()"
             },
             # Add more files as needed
         ]
@@ -110,16 +108,20 @@ headers = {
 
 data = {
     "source": {
-        "type": "files",
-        "mode": "diff",
+        "type": "diff",
         "operations": [
             {
-                "operation": "upsert",
+                "type": "upsert",
                 "filename": "src/main.py",
-                "code": "def main():\n    print('Agent updated this function')\n    return True"
+                "content": "def main():\n    print('Agent updated this function')\n    return True"
             },
             {
-                "operation": "delete",
+                "type": "rename",
+                "old_filename": "src/helpers.ts"
+                "new_filename": "src/utils.ts"
+            },
+            {
+                "type": "delete",
                 "filename": "old-unused-file.py"
             }
         ]
@@ -143,15 +145,14 @@ headers = {
 data = {
     "source": {
         "type": "files",
-        "mode": "overwrite",
         "files": [
             {
                 "filename": "src/main.py",
-                "code": "def main():\n    print('Agent completely rewrote this')\n    return True"
+                "content": "def main():\n    print('Agent completely rewrote this')\n    return True"
             },
             {
                 "filename": "README.md",
-                "code": "# Agent Updated Project\n\nThis project was updated by an AI agent."
+                "content": "# Agent Updated Project\n\nThis project was updated by an AI agent."
             }
         ]
     }
@@ -184,7 +185,6 @@ results = response.json()["results"]
 ```
 
 You can parse the results the same way you do with direct calls to the reranker.
-
 
 ```json
 [

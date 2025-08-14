@@ -17,12 +17,15 @@ description: 'Update repo content with files or sync from Git.'
 
   <Expandable title="properties" defaultOpen={false}>
 
-  <ParamField body="type" type="string" required>
-    The source type: `"files"` for file updates or `"git"` for Git sync
-  </ParamField>
+{' '}
+
+<ParamField body="type" type="string" required>
+  Update type: `"git"` for Git sync, `"files"` to replace all repo content, or
+  `"diff"` for specific operations
+</ParamField>
 
   <Tabs>
-    <Tab title="Git Source">
+    <Tab title="Git">
       <ParamField body="url" type="string" required>
         Git repo URL to sync from
       </ParamField>
@@ -30,55 +33,61 @@ description: 'Update repo content with files or sync from Git.'
       <ParamField body="branch" type="string">
         Specific branch to sync (optional)
       </ParamField>
-      
-      <ParamField body="commit" type="string">
-        Specific commit hash to sync (optional)
-      </ParamField>
-      
-      <ParamField body="depth" type="integer">
-        Depth of Git history to fetch (optional)
-      </ParamField>
     </Tab>
     
-    <Tab title="Files Overwrite">
-      <ParamField body="mode" type="string" required>
-        Set to `"overwrite"` to replace all repo content
-      </ParamField>
-      
+    <Tab title="Files">
       <ParamField body="files" type="array" required>
-        Array of file objects to overwrite the repo with
+        Array of file objects that will completely replace the repo content. Any files not included will be deleted from the repo.
         
         <Expandable title="properties" defaultOpen={false}>
         <ParamField body="filename" type="string" required>
           The path and filename for the file
         </ParamField>
         
-        <ParamField body="code" type="string" required>
+        <ParamField body="content" type="string" required>
           The content of the file
         </ParamField>
         </Expandable>
       </ParamField>
     </Tab>
     
-    <Tab title="Files Diff">
-      <ParamField body="mode" type="string" required>
-        Set to `"diff"` to apply specific file operations
-      </ParamField>
-      
+    <Tab title="Diff">
       <ParamField body="operations" type="array" required>
         Array of file operations to perform
         
         <Expandable title="properties" defaultOpen={false}>
-        <ParamField body="operation" type="string" required>
-          Operation type: `"upsert"` to create/update or `"delete"` to remove
-        </ParamField>
-        
-        <ParamField body="filename" type="string" required>
-          The path and filename for the operation
-        </ParamField>
-        
-        <ParamField body="code" type="string">
-          File content (required for "upsert" operations)
+        <ParamField body="type" type="string" required>
+          Operation type: `"write"` to create/update, `"rename"` to change filename, or `"delete"` to remove
+          
+          <Expandable title="operation-specific properties" defaultOpen={false}>
+          <Tabs>
+            <Tab title="Write">
+              <ParamField body="filename" type="string" required>
+                The path and filename for the file
+              </ParamField>
+              
+              <ParamField body="content" type="string" required>
+                The content of the file
+              </ParamField>
+            </Tab>
+            
+            <Tab title="Rename">
+              <ParamField body="old_filename" type="string" required>
+                The current path and filename
+              </ParamField>
+              
+              <ParamField body="new_filename" type="string" required>
+                The new path and filename
+              </ParamField>
+            </Tab>
+            
+            <Tab title="Delete">
+              <ParamField body="filename" type="string" required>
+                The path and filename to delete
+              </ParamField>
+            </Tab>
+          </Tabs>
+          </Expandable>
         </ParamField>
         </Expandable>
       </ParamField>
@@ -90,8 +99,8 @@ description: 'Update repo content with files or sync from Git.'
 
 ## Response
 
-<ResponseField name="commit_id" type="string">
-  The commit ID of the updated repo
+<ResponseField name="repo_head" type="string">
+  Commit hash for the updated repo head
 </ResponseField>
 
 <RequestExample>
@@ -102,16 +111,20 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
   -H "Content-Type: application/json" \
   -d '{
     "source": {
-      "type": "files",
-      "mode": "diff",
+      "type": "diff",
       "operations": [
         {
-          "operation": "upsert",
+          "type": "write",
           "filename": "src/search.ts",
-          "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+          "content": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
         },
         {
-          "operation": "delete",
+          "type": "rename",
+          "old_filename": "src/utils.ts",
+          "new_filename": "src/helpers.ts"
+        },
+        {
+          "type": "delete",
           "filename": "old-file.js"
         }
       ]
@@ -132,16 +145,20 @@ headers = {
 
 data = {
     "source": {
-        "type": "files",
-        "mode": "diff",
+        "type": "diff",
         "operations": [
             {
-                "operation": "upsert",
+                "type": "write",
                 "filename": "src/search.ts",
-                "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+                "content": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
             },
             {
-                "operation": "delete",
+                "type": "rename",
+                "old_filename": "src/utils.ts",
+                "new_filename": "src/helpers.ts"
+            },
+            {
+                "type": "delete",
                 "filename": "old-file.js"
             }
         ]
@@ -158,7 +175,7 @@ print(response.json())
 
 ```json Response
 {
-  "commit_id": "abc123def456"
+  "repo_head": "abc123def456"
 }
 ```
 

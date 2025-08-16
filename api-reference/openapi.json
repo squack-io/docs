@@ -560,12 +560,48 @@
         ],
         "parameters": [
           {
-            "name": "page",
+            "name": "order_by",
             "in": "query",
-            "description": "Page number for pagination",
+            "description": "Field to order results by.",
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "updated_at"],
+              "default": "created_at"
+            }
+          },
+          {
+            "name": "order_descending",
+            "in": "query",
+            "description": "Whether to order results in descending order.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "filter_metadata",
+            "in": "query",
+            "description": "URL-encoded JSON map of metadata key/value pairs to filter by.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_start",
+            "in": "query",
+            "description": "Index of the first item to return (0-based)",
             "schema": {
               "type": "integer",
-              "default": 1
+              "default": 0
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of items to return per page",
+            "schema": {
+              "type": "integer",
+              "default": 100
             }
           }
         ],
@@ -1237,7 +1273,7 @@
       },
       "ListReposResponse": {
         "type": "object",
-        "required": ["items", "next_page"],
+        "required": ["items"],
         "properties": {
           "items": {
             "type": "array",
@@ -1252,6 +1288,10 @@
                   "type": "string",
                   "format": "date-time"
                 },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
                 "metadata": {
                   "type": "object",
                   "additionalProperties": true
@@ -1260,7 +1300,8 @@
             }
           },
           "next_page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Index of the first item on the next page (omitted if there are no more items)"
           }
         }
       },
@@ -1328,7 +1369,7 @@
                   "properties": {
                     "operation": {
                       "type": "string",
-                      "enum": ["upsert"]
+                      "enum": ["write"]
                     },
                     "filename": {
                       "type": "string"

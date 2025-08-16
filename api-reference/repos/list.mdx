@@ -5,40 +5,61 @@ description: 'Get a paginated list of all repos you own.'
 ---
 
 ## Query Parameters
+<ParamField query="page_start" type="integer">
+  Start index of the page (default: 0)
+</ParamField>
 
-<ParamField query="page" type="integer">
-  Page number (default: 1)
+<ParamField query="page_size" type="integer">
+  Number of repos to return per page (default: 100, min: 1, max: 100)
+</ParamField>
+
+<ParamField query="order_by" type="string">
+  Field to order results by (default: "created_at")
+</ParamField>
+
+<ParamField query="order_descending" type="boolean">
+  Whether to sort in descending order (default: false)
+</ParamField>
+
+<ParamField query="filter_metadata" type="string">
+  URL-encoded JSON map of metadata values to filter by
 </ParamField>
 
 ## Response
-
 <ResponseField name="items" type="array">
   Array of repo objects
-  
+
   <Expandable title="properties" defaultOpen={false}>
     <ResponseField name="repo_id" type="string">
       Unique identifier for the repo
     </ResponseField>
-    
+
     <ResponseField name="created_at" type="string">
-      Repo creation timestamp (ISO 8601 format)
+      Time when the repo was originally created (ISO 8601 timestamp)
     </ResponseField>
-    
+
+    <ResponseField name="updated_at" type="string">
+      Time when the repo was last modified (ISO 8601 timestamp)
+    </ResponseField>
+
     <ResponseField name="metadata" type="object">
-      Custom metadata stored with the repo
+      Custom key/value pairs associated with the repo
     </ResponseField>
   </Expandable>
 </ResponseField>
 
 <ResponseField name="next_page" type="integer">
-  Next page number, or null if no more pages
+  Start index of the next page (omitted if no more pages)
 </ResponseField>
 
+<ResponseField name="total_items" type="integer">
+  Total number of repos matching the query
+</ResponseField>
 
 <RequestExample>
 
 ```bash cURL
-curl -X GET "https://api.relace.ai/v1/repo?page=1" \
+curl -X GET "https://api.relace.ai/v1/repo?page_size=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -50,7 +71,7 @@ headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
 params = {
-    "page": 1
+    "page_size": 10,
 }
 
 response = requests.get(url, headers=headers, params=params)
@@ -67,13 +88,14 @@ print(response.json())
     {
       "repo_id": "123e4567-e89b-12d3-a456-426614174000",
       "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T11:15:00Z",
       "metadata": {
         "name": "my-project",
         "description": "A sample project"
       }
     }
   ],
-  "next_page": 2
+  "total_items": 1
 }
 ```
 

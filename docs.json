@@ -34,7 +34,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["docs/introduction", "docs/agent-guide"]
+            "pages": ["docs/introduction"]
           },
           {
             "group": "Model Guides",

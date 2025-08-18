@@ -63,7 +63,11 @@
           },
           {
             "group": "Repos",
-            "pages": ["docs/repos/quickstart"]
+            "pages": [
+              "docs/repos/quickstart",
+              "docs/repos/semantic-understanding",
+              "docs/repos/infrastructure"
+            ]
           },
           {
             "group": "Pricing",

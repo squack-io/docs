@@ -1,0 +1,135 @@
+---
+title: "Semantic Understanding"
+description: "Learn how to extract meaningful insights from your codebase using AI-powered semantic retrieval"
+---
+
+## Overview
+
+Relace Repos offers two powerful endpoints for semantic understanding of your codebase:
+
+- **Ask**: Get natural language answers to questions about your code with built-in citations
+- **Retrieve**: Get ranked lists of relevant files and code sections for a given query
+
+Both endpoints leverage Relace's built-in two-stage retrieval system that automatically indexes your code and provides intelligent semantic search without any configuration.
+
+## When to Use Each Endpoint
+
+### Use Ask When:
+
+- You need explanatory answers about how code works
+- You want to understand complex workflows or architecture
+- You need documentation-style responses with citations
+- You're building conversational interfaces for code exploration
+- You want quick summaries of functionality
+
+### Use Retrieve When:
+
+- You need specific files to work with for code generation
+- You're building RAG systems that need ranked context
+- You want to control the level of detail returned
+- You need to filter results by relevance scores
+- You're implementing semantic search features
+
+## 1. Ask Questions About Your Code
+
+The Ask endpoint returns natural language explanations perfect for understanding how your codebase works.
+
+```python
+import requests
+
+repo_id = "your-repo-id"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/ask"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+# Ask about authentication flow
+data = {
+    "query": "How does the user authentication system work in this codebase?"
+}
+
+response = requests.post(url, headers=headers, json=data)
+answer = response.json()["answer"]
+print(answer)
+```
+
+### Example Ask Queries:
+
+- "How does error handling work across the application?"
+- "What's the data flow for user registration?"
+- "How are API keys validated and stored?"
+- "What security measures are implemented?"
+- "How does the caching system work?"
+
+## 2. Retrieve Relevant Files and Code
+
+The Retrieve endpoint returns ranked files with relevance scores, giving you precise control over what code to examine or use for generation.
+
+```python
+import requests
+
+repo_id = "your-repo-id"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+# Find authentication-related files
+data = {
+    "query": "user authentication and login functionality",
+    "score_threshold": 0.3,        # Only return files with 30%+ relevance
+    "token_limit": 30000,          # Limit total tokens returned
+    "include_content": True        # Include file content in response
+}
+
+response = requests.post(url, headers=headers, json=data)
+results = response.json()["results"]
+
+# Process results
+for file in results:
+    print(f"File: {file['filename']} (Score: {file['score']:.3f})")
+    if file['score'] > 0.7:  # High relevance files
+        print(f"Content preview: {file['content'][:200]}...")
+```
+
+### Example Retrieve Queries:
+
+- "database connection and ORM setup"
+- "API endpoint handlers for user management"
+- "frontend components for data visualization"
+- "test files for payment processing"
+- "configuration and environment setup"
+
+## 3. Best Practices
+
+### Query Optimization
+
+- **Be specific**: "JWT token validation middleware" vs "authentication"
+- **Use domain language**: Include technical terms relevant to your stack
+- **Ask follow-ups**: Use Ask to understand, then Retrieve for implementation
+
+### Performance Tips
+
+- Set appropriate `score_threshold` values (0.3-0.4 for balanced results)
+- Use `include_content: false` for quick file discovery
+- Adjust `token_limit` based on your downstream model's context window
+
+### Integration Patterns
+
+- **Documentation Generation**: Use Ask to create explanations of complex features
+- **Code Generation**: Use Retrieve to gather relevant context for LLM code generation
+- **Code Review**: Use Ask to understand unfamiliar code sections
+- **Debugging**: Use Retrieve to find all files related to a specific error or feature
+
+## Next Steps
+
+Now that you understand semantic retrieval, you can:
+
+- Integrate these endpoints into your AI coding workflows
+- Build intelligent code exploration tools
+- Create context-aware documentation systems
+- Enhance your code generation pipelines
+
+For more details on API parameters and responses, see our [API reference](/api-reference/repos/ask) for Ask and [API reference](/api-reference/repos/retrieve) for Retrieve.

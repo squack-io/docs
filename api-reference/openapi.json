@@ -20,6 +20,10 @@
     {
       "url": "https://embeddings.endpoint.relace.run",
       "description": "Server for code embedding endpoints"
+    },
+    {
+      "url": "https://api.relace.ai",
+      "description": "Server for general infrastructure"
     }
   ],
   "security": [
@@ -45,8 +49,8 @@
                 "$ref": "#/components/schemas/InstantApplyRequest"
               },
               "example": {
-                "initialCode": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}",
-                "editSnippet": "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}",
+                "initial_code": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}",
+                "edit_snippet": "// ... keep existing code\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}",
                 "stream": false
               }
             }
@@ -164,23 +168,23 @@
                 "codebase": [
                   {
                     "filename": "src/search.ts",
-                    "code": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n}\n}\n  return undefined;\n}"
+                    "content": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n}\n}\n  return undefined;\n}"
                   },
                   {
                     "filename": "src/types.ts",
-                    "code": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
+                    "content": "interface Item {\n  id: string;\n  value: string;\n  metadata?: Record<string, unknown>;\n}"
                   },
                   {
                     "filename": "src/render.ts",
-                    "code": "function renderItems(items: Item[]): void {\\n  const container = document.getElementById('items-container');\\n  if (!container) return;\\n  \\n  container.innerHTML = '';\\n  \\n  for (const item of items) {\\n    const element = document.createElement('div');\\n    element.textContent = item.value;\\n    element.dataset.id = item.id;\\n    container.appendChild(element);\\n}\\n}"
+                    "content": "function renderItems(items: Item[]): void {\\n  const container = document.getElementById('items-container');\\n  if (!container) return;\\n  \\n  container.innerHTML = '';\\n  \\n  for (const item of items) {\\n    const element = document.createElement('div');\\n    element.textContent = item.value;\\n    element.dataset.id = item.id;\\n    container.appendChild(element);\\n}\\n}"
                   },
                   {
                     "filename": "src/styles.css",
-                    "code": ".container {\\n  max-width: 1200px;\\n  margin: 0 auto;\\n  padding: 20px;\\n}\\n\\n.header {\\n  background: #f5f5f5;\\n  padding: 1rem;\\n}"
+                    "content": ".container {\\n  max-width: 1200px;\\n  margin: 0 auto;\\n  padding: 20px;\\n}\\n\\n.header {\\n  background: #f5f5f5;\\n  padding: 1rem;\\n}"
                   },
                   {
                     "filename": "src/constants.ts",
-                    "code": "export const APP_NAME = 'MyApp';\\nexport const VERSION = '1.0.0';\\nexport const MAX_ITEMS = 1000;"
+                    "content": "export const APP_NAME = 'MyApp';\\nexport const VERSION = '1.0.0';\\nexport const MAX_ITEMS = 1000;"
                   }
                 ],
                 "token_limit": 100000
@@ -293,7 +297,7 @@
                 "codebase": [
                   {
                     "filename": "src/search.ts",
-                    "code": "function findItem(array: Item[], targetId: string): Item | undefined {\\n  for (let i = 0; i < array.length; i++) {\\n    const item = array[i];\\n    if (item.id === targetId) {\\n      return item;\\n}\\n}\\n  return undefined;\\n}"
+                    "content": "function findItem(array: Item[], targetId: string): Item | undefined {\\n  for (let i = 0; i < array.length; i++) {\\n    const item = array[i];\\n    if (item.id === targetId) {\\n      return item;\\n}\\n}\\n  return undefined;\\n}"
                   }
                 ],
                 "token_limit": 100000
@@ -494,6 +498,478 @@
           }
         }
       }
+    },
+    "/v1/repo": {
+      "post": {
+        "description": "Create a new repository",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "requestBody": {
+          "description": "Repository creation request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRepoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Repository created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRepoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "List all repositories",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Field to order results by.",
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "updated_at"],
+              "default": "created_at"
+            }
+          },
+          {
+            "name": "order_descending",
+            "in": "query",
+            "description": "Whether to order results in descending order.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "filter_metadata",
+            "in": "query",
+            "description": "URL-encoded JSON map of metadata key/value pairs to filter by.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_start",
+            "in": "query",
+            "description": "Index of the first item to return (0-based)",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of items to return per page",
+            "schema": {
+              "type": "integer",
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of repositories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListReposResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/repo/{repo_id}": {
+      "delete": {
+        "description": "Delete a repository",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "description": "Repository ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Repository deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Repository not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/repo/{repo_id}/update": {
+      "post": {
+        "description": "Update repository content",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "description": "Repository ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Repository update request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRepoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Repository updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateRepoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Repository not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/repo/{repo_id}/retrieve": {
+      "post": {
+        "description": "Retrieve relevant files from repository using semantic search",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "description": "Repository ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Semantic search request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetrieveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Repository not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/repo/{repo_id}/ask": {
+      "post": {
+        "description": "Ask a question about the repository content",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "description": "Repository ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Question about repository",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Answer to the question",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Repository not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/repo/{repo_id}/search": {
+      "post": {
+        "description": "Search for specific text patterns in repository files",
+        "servers": [
+          {
+            "url": "https://api.relace.ai"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "description": "Repository ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Text search request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results with line matches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Repository not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -501,15 +977,15 @@
       "InstantApplyRequest": {
         "type": "object",
         "required": [
-          "initialCode",
-          "editSnippet"
+          "initial_code",
+          "edit_snippet"
         ],
         "properties": {
-          "initialCode": {
+          "initial_code": {
             "type": "string",
             "description": "The original code that needs to be modified"
           },
-          "editSnippet": {
+          "edit_snippet": {
             "type": "string",
             "description": "The code changes to be applied to the initial code"
           },
@@ -518,7 +994,7 @@
             "description": "Whether to stream the response back",
             "default": false
           },
-          "relace-metadata": {
+          "relace_metadata": {
             "type": "object",
             "description": "Optional metadata for logging and tracking purposes.",
             "additionalProperties": true
@@ -560,14 +1036,14 @@
         "type": "object",
         "required": [
           "filename",
-          "code"
+          "content"
         ],
         "properties": {
           "filename": {
             "type": "string",
             "description": "The name of the file including its path"
           },
-          "code": {
+          "content": {
             "type": "string",
             "description": "The content of the file"
           }
@@ -597,7 +1073,7 @@
             "description": "Maximum token limit for the response",
             "default": 100000
           },
-          "relace-metadata": {
+          "relace_metadata": {
             "type": "object",
             "description": "Optional metadata for logging and tracking purposes. Removed before forwarding to origin server.",
             "additionalProperties": true
@@ -718,6 +1194,315 @@
               }
             },
             "description": "Token usage information for the request"
+          }
+        }
+      },
+      "FileSource": {
+        "type": "object",
+        "required": ["type", "files"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["files"]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["filename", "content"],
+              "properties": {
+                "filename": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GitSource": {
+        "type": "object",
+        "required": ["type", "url"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["git"]
+          },
+          "url": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string"
+          },
+          "depth": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateRepoRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/FileSource"
+              },
+              {
+                "$ref": "#/components/schemas/GitSource"
+              }
+            ]
+          }
+        }
+      },
+      "CreateRepoResponse": {
+        "type": "object",
+        "required": ["repo_id"],
+        "properties": {
+          "repo_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ListReposResponse": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["repo_id", "created_at", "metadata"],
+              "properties": {
+                "repo_id": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "metadata": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "next_page": {
+            "type": "integer",
+            "description": "Index of the first item on the next page (omitted if there are no more items)"
+          }
+        }
+      },
+      "FilesOverwriteSource": {
+        "type": "object",
+        "required": ["type", "mode", "files"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["files"]
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["overwrite"]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["filename", "content"],
+              "properties": {
+                "filename": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "FilesDiffSource": {
+        "type": "object",
+        "required": ["type", "mode", "operations"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["files"]
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["diff"]
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["operation", "filename"],
+                  "properties": {
+                    "operation": {
+                      "type": "string",
+                      "enum": ["delete"]
+                    },
+                    "filename": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": ["operation", "filename", "content"],
+                  "properties": {
+                    "operation": {
+                      "type": "string",
+                      "enum": ["write"]
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "UpdateRepoRequest": {
+        "type": "object",
+        "required": ["source"],
+        "properties": {
+          "source": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GitSource"
+              },
+              {
+                "$ref": "#/components/schemas/FilesOverwriteSource"
+              },
+              {
+                "$ref": "#/components/schemas/FilesDiffSource"
+              }
+            ]
+          }
+        }
+      },
+      "UpdateRepoResponse": {
+        "type": "object",
+        "required": ["commit_id"],
+        "properties": {
+          "commit_id": {
+            "type": "string"
+          }
+        }
+      },
+      "RetrieveRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string"
+          }
+        }
+      },
+      "RetrieveResponse": {
+        "type": "object",
+        "required": ["results"],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["filename", "score"],
+              "properties": {
+                "filename": {
+                  "type": "string"
+                },
+                "score": {
+                  "type": "number",
+                  "format": "float"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AskRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string"
+          }
+        }
+      },
+      "AskResponse": {
+        "type": "object",
+        "required": ["answer"],
+        "properties": {
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "SearchRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "required": ["results"],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["filename", "line_number", "line_content", "match_start", "match_end"],
+              "properties": {
+                "filename": {
+                  "type": "string"
+                },
+                "line_number": {
+                  "type": "integer"
+                },
+                "line_content": {
+                  "type": "string"
+                },
+                "match_start": {
+                  "type": "integer"
+                },
+                "match_end": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       },

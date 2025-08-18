@@ -1,0 +1,206 @@
+---
+title: 'Quickstart'
+description: "Transition to Relace Repos as your coding agent's source control system"
+---
+
+## Prerequisites
+
+- [Sign up](https://app.relace.ai) for a Relace account.
+- Create an [API key](https://app.relace.ai/settings/api-keys).
+
+## 1. Transfer Existing Source to Relace
+
+Start by transferring your existing repositories to Relace.
+
+<CodeGroup>
+
+```python From GitHub
+import requests
+
+url = "https://api.relace.ai/v1/repo"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "git",
+        "url": "https://github.com/username/repository-name",
+        "branch": "main"
+    },
+    "metadata": {...}  # Optional: add any custom properties
+}
+
+response = requests.post(url, headers=headers, json=data)
+repo = response.json()
+print(f"Repository created with ID: {repo['repo_id']}")
+```
+
+```python From Files
+import requests
+
+url = "https://api.relace.ai/v1/repo"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "files",
+        "files": [
+            {
+                "filename": "src/main.py",
+                "content": "def main():\n    print('Hello from my existing project!')\n\nif __name__ == '__main__':\n    main()"
+            },
+            # Add more files as needed
+        ]
+    },
+    "metadata": {...}  # Optional: add any custom properties
+}
+
+response = requests.post(url, headers=headers, json=data)
+repo = response.json()
+print(f"Repository created with ID: {repo['repo_id']}")
+```
+
+</CodeGroup>
+
+Keep track of the Relace `repo_id` in your database for future reference. You can optionally include a `metadata` parameter to add any properties of repos you want to maintain.
+
+If you have a lot of repos to transfer, you'll have to perform this step in batches. See the [policies section](/docs/policies#rate-limits) for information on rate limits.
+
+## 2. Integrate Repos with Your Agent
+
+Now that your repositories live in Relace, you can integrate them with your agent's local file system. You can fetch the stored files directly from our API without needing to setup git on your host:
+
+```python
+import requests
+
+url = f"https://api.relace.ai/v1/repo/{repo_id}/clone"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.get(url, headers=headers)
+repo_files = response.json()
+
+# The response contains all files with their content
+for file in repo_files['files']:
+    print(f"File: {file['filename']}")
+    print(f"Content: {file['content'][:100]}...")  # First 100 characters
+```
+
+After your agent modifies files, push the changes back to Relace. You can either update specific files or overwrite all repository content.
+
+<CodeGroup>
+
+```python Diff Mode
+import requests
+
+# Apply specific file operations using diff mode
+url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "diff",
+        "operations": [
+            {
+                "type": "write",
+                "filename": "src/main.py",
+                "content": "def main():\n    print('Agent updated this function')\n    return True"
+            },
+            {
+                "type": "rename",
+                "old_filename": "src/helpers.ts"
+                "new_filename": "src/utils.ts"
+            },
+            {
+                "type": "delete",
+                "filename": "old-unused-file.py"
+            }
+        ]
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(f"Applied diff operations: {response.json()}")
+```
+
+```python Overwrite Mode
+import requests
+
+# Overwrite all repository content
+url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "files",
+        "files": [
+            {
+                "filename": "src/main.py",
+                "content": "def main():\n    print('Agent completely rewrote this')\n    return True"
+            },
+            {
+                "filename": "README.md",
+                "content": "# Agent Updated Project\n\nThis project was updated by an AI agent."
+            }
+        ]
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(f"Overwrote repository: {response.json()}")
+```
+
+</CodeGroup>
+
+## 3. Use Built-In Semantic Retrieval
+
+Repositories stored in Relace get automatically indexed with our code embedding model and are refreshed with each code update. Use the retrieve endpoint as an agent tool to score files based on relevance to a user query.
+
+```python
+import requests
+
+url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "query": "Add a user profile component with avatar and edit functionality",
+}
+
+response = requests.post(url, headers=headers, json=data)
+results = response.json()["results"]
+```
+
+You can parse the results the same way you do with direct calls to the reranker.
+
+```json
+[
+  {
+    "filename": "src/components/UserProfile.tsx",
+    "score": 0.9598
+  },
+  {
+    "filename": "src/types/user.ts",
+    "score": 0.0321
+  },
+  {
+    "filename": "src/components/Header.tsx",
+    "score": 0.0014
+  }
+]
+```
+
+For more details, see our [API reference](/api-reference/introduction).

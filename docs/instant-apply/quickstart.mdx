@@ -40,8 +40,8 @@ headers = {
 }
 
 data = {
-    "initialCode": initial_code,
-    "editSnippet": edit_snippet,
+    "initial_code": initial_code,
+    "edit_snippet": edit_snippet,
 }
 
 response = requests.post(url, headers=headers, json=data)
@@ -54,7 +54,7 @@ Collect the merged code from the response json.
 
 ```json
 {
-  "mergedCode": merged_code,
+  "mergedCode": mergedCode,
   "usage": {
     "prompt_tokens": prompt_tokens,
     "completion_tokens": completion_tokens,

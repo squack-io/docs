@@ -1,0 +1,182 @@
+---
+title: 'Update Repo'
+api: 'POST https://api.relace.ai/v1/repo/{repo_id}/update'
+description: 'Update repo content with files or sync from Git.'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  Repo ID
+</ParamField>
+
+## Request Body
+
+<ParamField body="source" type="object" required>
+  Source for updating the repo content
+
+  <Expandable title="properties" defaultOpen={false}>
+
+{' '}
+
+<ParamField body="type" type="string" required>
+  Update type: `"git"` for Git sync, `"files"` to replace all repo content, or
+  `"diff"` for specific operations
+</ParamField>
+
+  <Tabs>
+    <Tab title="Git">
+      <ParamField body="url" type="string" required>
+        Git repo URL to sync from
+      </ParamField>
+      
+      <ParamField body="branch" type="string">
+        Specific branch to sync (optional)
+      </ParamField>
+    </Tab>
+    
+    <Tab title="Files">
+      <ParamField body="files" type="array" required>
+        Array of file objects that will completely replace the repo content. Any files not included will be deleted from the repo.
+        
+        <Expandable title="properties" defaultOpen={false}>
+        <ParamField body="filename" type="string" required>
+          The path and filename for the file
+        </ParamField>
+        
+        <ParamField body="content" type="string" required>
+          The content of the file
+        </ParamField>
+        </Expandable>
+      </ParamField>
+    </Tab>
+    
+    <Tab title="Diff">
+      <ParamField body="operations" type="array" required>
+        Array of file operations to perform
+        
+        <Expandable title="properties" defaultOpen={false}>
+        <ParamField body="type" type="string" required>
+          Operation type: `"write"` to create/update, `"rename"` to change filename, or `"delete"` to remove
+          
+          <Expandable title="operation-specific properties" defaultOpen={false}>
+          <Tabs>
+            <Tab title="Write">
+              <ParamField body="filename" type="string" required>
+                The path and filename for the file
+              </ParamField>
+              
+              <ParamField body="content" type="string" required>
+                The content of the file
+              </ParamField>
+            </Tab>
+            
+            <Tab title="Rename">
+              <ParamField body="old_filename" type="string" required>
+                The current path and filename
+              </ParamField>
+              
+              <ParamField body="new_filename" type="string" required>
+                The new path and filename
+              </ParamField>
+            </Tab>
+            
+            <Tab title="Delete">
+              <ParamField body="filename" type="string" required>
+                The path and filename to delete
+              </ParamField>
+            </Tab>
+          </Tabs>
+          </Expandable>
+        </ParamField>
+        </Expandable>
+      </ParamField>
+    </Tab>
+  </Tabs>
+
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="repo_head" type="string">
+  Commit hash for the updated repo head
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": {
+      "type": "diff",
+      "operations": [
+        {
+          "type": "write",
+          "filename": "src/search.ts",
+          "content": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+        },
+        {
+          "type": "rename",
+          "old_filename": "src/utils.ts",
+          "new_filename": "src/helpers.ts"
+        },
+        {
+          "type": "delete",
+          "filename": "old-file.js"
+        }
+      ]
+    }
+  }'
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "diff",
+        "operations": [
+            {
+                "type": "write",
+                "filename": "src/search.ts",
+                "content": "function findItem(array: Item[], targetId: string): Item | undefined {\n  for (let i = 0; i < array.length; i++) {\n    const item = array[i];\n    if (item.id === targetId) {\n      return item;\n    }\n  }\n  return undefined;\n}"
+            },
+            {
+                "type": "rename",
+                "old_filename": "src/utils.ts",
+                "new_filename": "src/helpers.ts"
+            },
+            {
+                "type": "delete",
+                "filename": "old-file.js"
+            }
+        ]
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+print(response.json())
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "repo_head": "abc123def456"
+}
+```
+
+</ResponseExample>

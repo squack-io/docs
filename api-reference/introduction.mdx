@@ -1,58 +1,55 @@
 ---
-title: 'Introduction'
-description: 'API documentation for Relace code generation models'
+title: "Introduction"
+description: "Learn about Relace API organization, general response codes, and authentication strategies."
 ---
 
-## Welcome to the Relace API
+## Base URLs
 
-The Relace API provides access to powerful code generation models that help developers work more efficiently. Our API offers two main endpoints:
+The Relace API is organized into two distinct domain patterns: `*.endpoint.relace.run` domains for direct AI model access, and `api.relace.run` for general infrastructure services including source control. 
 
-1. **Instant Apply**: Merge code snippets from an LLM into your existing codebase
-2. **Code Reranker**: Assess the relevance of files in your codebase to a user's query
+### Model Endpoints
+```
+https://*.endpoint.relace.run
+```
+To use our hosted models the url pattern follows the above convention -- the * is a placeholder for the series of model you are using. *e.g.* `instantapply`, `ranker`, `embeddings`.
 
-## API Endpoints
-
-The API is served from two different endpoints:
-
-- **Instant Apply**: `https://instantapply.endpoint.relace.run`
-- **Code Reranker**: `https://ranker.endpoint.relace.run`
+### Infrastructure Endpoints
+```
+https://api.relace.run
+```
+For accessing our infrastructure (*e.g.* source control) you will use the routes specified in this API reference with our common base url.
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens. Include your API key in the Authorization header of your requests:
+To authenticate you need to add an Authorization header with the contents of the header being your Relace API Key, which is a 32 digit key with with the prefix `rlc-`.
 
-```bash
-Authorization: Bearer YOUR_API_KEY
 ```
+Authorization: Bearer rlc-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## Response Codes
+
+Relace uses standard HTTP codes to indicate the success or failure of your requests.
+
+In general, 2xx HTTP codes correspond to success, 4xx codes are for user-related failures, and 5xx codes are for infrastructure issues.
+
+| Status | Description |
+|--------|-------------|
+| <small>`200`</small> | Successful request. |
+| <small>`201`</small> | Resource created successfully. |
+| <small>`204`</small> | Successful request, no content returned. |
+| <small>`400`</small> | Check that the parameters were correct. |
+| <small>`401`</small> | The API key used was missing or invalid. |
+| <small>`403`</small> | The API key used was invalid or lacks permissions. |
+| <small>`404`</small> | The resource was not found. |
+| <small>`423`</small> | The resource is temporarily locked. |
+| <small>`429`</small> | The rate limit was exceeded. |
+| <small>`5xx`</small> | Indicates an error with Relace servers. |
+
+Check [Error Codes](/api-reference/errors) for a comprehensive breakdown of all possible API errors.
 
 ## Rate Limits
 
-The API has a rate limit of 3 requests per minute. When you exceed this limit, you'll receive a 429 response with the following headers:
+Rate limits vary by tier and range from 3 calls per minute for free testing access to unlimited calls for high-volume users. When you exceed your rate limit, you'll receive a 429 response error code.
 
-- `X-RateLimit-Limit`: Rate limit ceiling for your API key
-- `X-RateLimit-Remaining`: Number of requests left for the time window
-- `X-RateLimit-Reset`: Time at which the rate limit resets
-
-## Error Handling
-
-The API uses standard HTTP status codes to indicate success or failure:
-
-- `200`: Success
-- `400`: Bad request
-- `401`: Unauthorized
-- `404`: API key not found
-- `429`: Rate limit exceeded
-- `500`: Internal server error
-
-All error responses include a JSON body with details about the error.
-
-## Getting Started
-
-To start using the Relace API:
-
-1. Obtain your API key from the [Relace Dashboard](https://app.relace.ai)
-2. Choose the appropriate endpoint based on your needs
-3. Include your API key in the Authorization header
-4. Make requests to the API endpoints
-
-For detailed information about each endpoint and their request/response formats, please refer to the API reference documentation.
+See the full [rate limits table](/docs/policies#rate-limits) for detailed information about each tier's limits.

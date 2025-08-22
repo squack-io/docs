@@ -26,19 +26,19 @@ description: 'Search for specific text patterns in repo files'
     <ResponseField name="filename" type="string">
       Path to the file within the repo
     </ResponseField>
-    
+
     <ResponseField name="line_number" type="integer">
       Line number where the match was found
     </ResponseField>
-    
+
     <ResponseField name="line_content" type="string">
       Content of the matching line
     </ResponseField>
-    
+
     <ResponseField name="match_start" type="integer">
       Starting position of the match in the line
     </ResponseField>
-    
+
     <ResponseField name="match_end" type="integer">
       Ending position of the match in the line
     </ResponseField>
@@ -74,6 +74,10 @@ response = requests.post(url, headers=headers, json=data)
 print(response.json())
 ```
 
+{/* TypeScript SDK for /search is not yet available in the generated client. Use cURL or a custom fetch for now. */}
+
+{/* Python SDK for /search is not yet available in the generated client. Use cURL or HTTP client for now. */}
+
 </RequestExample>
 
 <ResponseExample>
@@ -89,7 +93,7 @@ print(response.json())
       "match_end": 14
     },
     {
-      "filename": "src/middleware.py", 
+      "filename": "src/middleware.py",
       "line_number": 28,
       "line_content": "    # Check if user is authenticated",
       "match_start": 22,

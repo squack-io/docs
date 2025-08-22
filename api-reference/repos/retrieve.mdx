@@ -37,11 +37,11 @@ description: 'Two-stage codebase retrieval using semantic search'
     <ResponseField name="filename" type="string">
       Path to the file within the repo
     </ResponseField>
-    
+
     <ResponseField name="score" type="number">
       Relevance score between 0.0 and 1.0
     </ResponseField>
-    
+
     <ResponseField name="content" type="string">
       File content (only included when include_content=true)
     </ResponseField>
@@ -81,6 +81,38 @@ data = {
 
 response = requests.post(url, headers=headers, json=data)
 print(response.json())
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const { data } = await client.POST('/repo/{repo_id}/retrieve', {
+  params: { path: { repo_id: '123e4567-e89b-12d3-a456-426614174000' } },
+  body: {
+    query: 'authentication and user login functionality',
+    score_threshold: 0.3,
+    token_limit: 30000,
+    include_content: true,
+  },
+})
+console.log(data?.results?.map((r) => ({ file: r.filename, score: r.score })))
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import retrieve_relevant_content_repo_repo_id_retrieve_post
+from relace_agent_client.models import RepoRetrieveRequest
+
+client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+with client as c:
+    r = retrieve_relevant_content_repo_repo_id_retrieve_post.sync(
+        client=c,
+        repo_id="123e4567-e89b-12d3-a456-426614174000",
+        body=RepoRetrieveRequest(query="authentication and user login functionality", include_content=True, score_threshold=0.3),
+    )
+print(r)
 ```
 
 </RequestExample>

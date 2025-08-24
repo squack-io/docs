@@ -1,0 +1,90 @@
+---
+title: 'Get Repo Details'
+api: 'GET https://api.relace.ai/v1/repo/{repo_id}'
+description: 'Retrieve details about a specific repository'
+---
+
+## Path Parameters
+
+<ParamField path="repo_id" type="string" required>
+  UUID of the repo to retrieve
+</ParamField>
+
+## Response
+
+<ResponseField name="repo_id" type="string">
+  Unique identifier for the repo
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Time when the repo was originally created (ISO 8601 timestamp)
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  Time when the repo was last modified (ISO 8601 timestamp)
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+  Custom key/value pairs associated with the repo
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+repo_id = "123e4567-e89b-12d3-a456-426614174000"
+url = f"https://api.relace.ai/v1/repo/{repo_id}"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const repo_id = '123e4567-e89b-12d3-a456-426614174000'
+const { data, error } = await client.GET('/repo/{repo_id}', {
+  params: { path: { repo_id } },
+})
+if (error) throw error
+console.log(data)
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import get_repo_repo_repo_id_get
+
+client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+with client as c:
+    repo = get_repo_repo_repo_id_get.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000")
+print(repo)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "repo_id": "123e4567-e89b-12d3-a456-426614174000",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T11:15:00Z", 
+  "metadata": {
+    "name": "my-project",
+    "description": "A sample project"
+  }
+}
+```
+
+</ResponseExample>

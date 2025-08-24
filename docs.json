@@ -89,7 +89,7 @@
           },
           {
             "group": "Code Reranker",
-            "pages": ["api-reference/code-reranker/rank-v2"]
+            "pages": ["api-reference/code-reranker/rank-v2", "api-reference/code-reranker/rank-v1"]
           },
           {
             "group": "Embeddings Model",
@@ -103,6 +103,7 @@
                 "pages": [
                   "api-reference/repos/list",
                   "api-reference/repos/create",
+                  "api-reference/repos/get",
                   "api-reference/repos/update",
                   "api-reference/repos/delete",
                   "api-reference/repos/clone"
@@ -112,7 +113,8 @@
                 "group": "Semantic Retrieval",
                 "pages": [
                   "api-reference/repos/retrieve",
-                  "api-reference/repos/ask"
+                  "api-reference/repos/ask",
+                  "api-reference/repos/search"
                 ]
               }
             ]

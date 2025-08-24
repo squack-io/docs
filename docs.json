@@ -34,7 +34,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["docs/introduction"]
+            "pages": ["docs/introduction", "docs/integration-guide"]
           },
           {
             "group": "Model Guides",
@@ -112,7 +112,8 @@
                 "group": "Semantic Retrieval",
                 "pages": [
                   "api-reference/repos/retrieve",
-                  "api-reference/repos/ask"
+                  "api-reference/repos/ask",
+                  "api-reference/repos/search"
                 ]
               }
             ]

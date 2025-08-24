@@ -1,4 +1,134 @@
 ---
 title: 'Embed Code'
 openapi: 'POST /v1/code/embed'
+description: 'Generate high-quality semantic embeddings for code snippets optimized for search and retrieval'
 ---
+
+## Overview
+
+The Code Embeddings endpoint generates dense vector representations of code snippets that capture semantic meaning and relationships. These embeddings are optimized specifically for code understanding and can be used to build powerful semantic search systems.
+
+## Key Features
+
+- **Code-optimized embeddings**: Trained specifically for programming languages and code patterns
+- **Multiple output formats**: Choose between `float` and `binary` quantization
+- **Batch processing**: Embed multiple code snippets in a single request
+- **Language agnostic**: Works across all programming languages
+
+## Output Formats
+
+### Float Embeddings (Default)
+Standard floating-point vectors providing maximum precision:
+```json
+{
+  "embedding": [0.123, -0.456, 0.789, ...]
+}
+```
+
+### Binary Quantization
+Compact binary representations with minimal precision loss:
+```json
+{
+  "embedding": [1, 0, 1, 0, 1, ...]
+}
+```
+
+Binary quantization offers:
+- **8x smaller storage requirements**
+- **Faster similarity computations** 
+- **Minimal retrieval performance loss** (typically <5%)
+
+## Use Cases
+
+### Semantic Code Search
+```python
+# Embed your codebase
+code_embeddings = []
+for file in codebase:
+    response = relace.embed_code(
+        model="relace-embed-v1",
+        input=[file.content],
+        output_dtype="float"
+    )
+    code_embeddings.append({
+        'filename': file.name,
+        'embedding': response['results'][0]['embedding']
+    })
+
+# Query with natural language
+query_embedding = relace.embed_code(
+    model="relace-embed-v1", 
+    input=["authentication function"]
+)['results'][0]['embedding']
+
+# Find similar code
+similarities = compute_cosine_similarity(query_embedding, code_embeddings)
+```
+
+### Code Clustering and Analysis
+```python
+# Embed multiple functions for clustering
+functions = extract_functions_from_codebase()
+response = relace.embed_code(
+    model="relace-embed-v1",
+    input=functions,
+    output_dtype="binary"  # Use binary for large-scale clustering
+)
+
+# Cluster similar functions
+embeddings = [r['embedding'] for r in response['results']]
+clusters = cluster_embeddings(embeddings)
+```
+
+### Vector Database Integration
+```python
+import weaviate
+
+# Prepare embeddings for vector database
+code_snippets = ["function authenticate()", "class UserModel", "async getData()"]
+response = relace.embed_code(
+    model="relace-embed-v1",
+    input=code_snippets
+)
+
+# Store in vector database
+for i, result in enumerate(response['results']):
+    weaviate_client.data_object.create({
+        "code": code_snippets[i],
+        "embedding": result['embedding']
+    })
+```
+
+## Model Information
+
+### relace-embed-v1
+- **Dimensions**: 768
+- **Max input length**: 8192 tokens per snippet
+- **Optimized for**: Code similarity, semantic search, clustering
+- **Languages**: Supports 100+ programming languages
+
+## Best Practices
+
+1. **Chunk large files**: Break large code files into logical functions or classes
+2. **Use binary quantization for scale**: Choose `binary` output for large embedding collections
+3. **Batch requests**: Send multiple code snippets in a single request for efficiency
+4. **Normalize inputs**: Remove excessive whitespace and comments for better consistency
+5. **Cache embeddings**: Store embeddings for static code to avoid re-computation
+
+## Integration with Other Endpoints
+
+Combine embeddings with other Relace services:
+
+```python
+# 1. Embed codebase for search
+embeddings = relace.embed_code(input=codebase_files)
+
+# 2. Use semantic search to find relevant files  
+relevant_files = vector_search(query_embedding, embeddings)
+
+# 3. Rank the relevant files
+ranked_files = relace.rank_code(query, relevant_files)
+
+# 4. Use top files as context for code generation
+context = select_top_files(ranked_files)
+```

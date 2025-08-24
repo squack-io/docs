@@ -1,4 +1,90 @@
 ---
 title: "Rank Code"
 openapi: "POST /v2/code/rank"
+description: "Assess the relevance of each file in your codebase to a user's query with advanced scoring"
 ---
+
+## Overview
+
+The v2 Code Reranker provides intelligent relevance scoring for files in your codebase based on natural language queries. Unlike the deprecated v1 endpoint that returned only ranked filenames, v2 returns detailed relevance scores for more precise filtering and decision-making.
+
+## Key Features
+
+- **Precise relevance scoring**: Each file gets a score between 0 and 1
+- **Context-aware ranking**: Understands code relationships and dependencies  
+- **Token limit management**: Automatically respects specified token constraints
+- **Language agnostic**: Works across all programming languages
+
+## Use Cases
+
+### RAG System Integration
+```python
+# Get relevance scores for semantic filtering
+response = relace.rank_code(
+    query="authentication middleware implementation",
+    codebase=codebase_files,
+    token_limit=50000
+)
+
+# Filter by relevance threshold
+relevant_files = [
+    result for result in response['results'] 
+    if result['score'] > 0.7
+]
+```
+
+### Code Generation Context
+```python
+# Rank files for LLM context
+query = "Add error handling to the payment processing system"
+ranked_results = relace.rank_code(query, codebase, token_limit=30000)
+
+# Use top-ranked files as context for code generation
+context_files = ranked_results['results'][:5]
+llm_prompt = build_prompt(query, context_files)
+```
+
+### Code Review Assistance
+```python
+# Find files related to a specific feature or bug
+query = "files related to user session management"
+results = relace.rank_code(query, codebase)
+
+# Review files in order of relevance
+for result in results['results']:
+    print(f"{result['filename']}: {result['score']:.3f}")
+```
+
+## Migration from v1
+
+The deprecated `/v1/code/rank` endpoint returns a simple array of filenames. To migrate to v2:
+
+**v1 Response:**
+```json
+["src/auth.ts", "src/middleware.ts", "src/types.ts"]
+```
+
+**v2 Response:**
+```json
+{
+  "results": [
+    {"filename": "src/auth.ts", "score": 0.95},
+    {"filename": "src/middleware.ts", "score": 0.87},
+    {"filename": "src/types.ts", "score": 0.72}
+  ],
+  "usage": {"total_tokens": 1250}
+}
+```
+
+## Best Practices
+
+1. **Set appropriate token limits**: Balance comprehensiveness with performance
+2. **Use descriptive queries**: Include domain-specific terminology for better results
+3. **Filter by score thresholds**: Use scores to determine relevance cutoffs
+4. **Combine with other endpoints**: Use ranked results as input for other Relace services
+
+## Performance Considerations
+
+- **Token usage**: Monitor the `usage.total_tokens` field to optimize costs
+- **Batch processing**: For large codebases, consider breaking into logical chunks
+- **Caching**: Cache results for repeated queries on stable codebases

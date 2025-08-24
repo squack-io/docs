@@ -1,0 +1,345 @@
+---
+title: 'Integration Guide'
+description: 'Learn how to combine Relace APIs for powerful AI-powered development workflows'
+---
+
+## Overview
+
+Relace provides a suite of complementary APIs that work together to enable sophisticated AI-powered development workflows. This guide shows you how to combine different endpoints for maximum effectiveness.
+
+## Common Integration Patterns
+
+### Pattern 1: Intelligent Code Generation
+
+Combine semantic retrieval with instant apply for context-aware code generation:
+
+```python
+import relace
+
+# 1. Use Repos API to find relevant context
+repo_id = "your-repo-id"
+context_results = relace.repos.retrieve(
+    repo_id=repo_id,
+    query="authentication middleware implementation",
+    score_threshold=0.3,
+    include_content=True
+)
+
+# 2. Generate code changes with your LLM using the context
+relevant_files = [r['content'] for r in context_results['results']]
+context = "\n\n".join(relevant_files)
+
+llm_prompt = f"""
+Based on this existing code context:
+{context}
+
+Add JWT token validation to the authentication middleware.
+Provide only the new code sections with context markers.
+"""
+
+edit_snippet = your_llm.generate(llm_prompt)
+
+# 3. Apply changes efficiently with Instant Apply
+current_middleware = get_current_file("src/middleware.py")
+merged_code = relace.instant_apply.apply(
+    initial_code=current_middleware,
+    edit_snippet=edit_snippet
+)
+
+# 4. Update the repository
+relace.repos.update(
+    repo_id=repo_id,
+    source={
+        "type": "diff",
+        "operations": [{
+            "type": "write",
+            "filename": "src/middleware.py",
+            "content": merged_code['mergedCode']
+        }]
+    }
+)
+```
+
+### Pattern 2: Semantic Code Search and Analysis
+
+Build a semantic search system using embeddings and ranking:
+
+```python
+# 1. Embed your codebase for semantic search
+codebase_files = load_codebase()
+code_embeddings = []
+
+for file in codebase_files:
+    response = relace.embeddings.embed(
+        model="relace-embed-v1",
+        input=[file.content],
+        output_dtype="binary"  # Use binary for efficient storage
+    )
+    code_embeddings.append({
+        'filename': file.name,
+        'content': file.content,
+        'embedding': response['results'][0]['embedding']
+    })
+
+# 2. Create query embedding
+def semantic_search(query, top_k=10):
+    query_response = relace.embeddings.embed(
+        model="relace-embed-v1",
+        input=[query]
+    )
+    query_embedding = query_response['results'][0]['embedding']
+    
+    # Compute similarities (implement cosine similarity)
+    similarities = compute_cosine_similarity(query_embedding, code_embeddings)
+    
+    # Get top candidates
+    top_candidates = get_top_k(similarities, top_k * 2)  # Get extra for reranking
+    
+    # 3. Rerank with Code Reranker for precision
+    candidate_files = [
+        {"filename": emb['filename'], "content": emb['content']}
+        for emb in top_candidates
+    ]
+    
+    rerank_response = relace.code_reranker.rank(
+        query=query,
+        codebase=candidate_files,
+        token_limit=50000
+    )
+    
+    # Return top results with scores
+    return rerank_response['results'][:top_k]
+
+# Usage
+results = semantic_search("error handling in payment processing")
+```
+
+### Pattern 3: AI Code Review System
+
+Implement an AI code review system using multiple endpoints:
+
+```python
+def ai_code_review(repo_id, changed_files, review_query):
+    # 1. Get context from repository
+    context_response = relace.repos.retrieve(
+        repo_id=repo_id,
+        query=f"{review_query} related to: {', '.join(changed_files)}",
+        score_threshold=0.2,
+        include_content=True
+    )
+    
+    # 2. Rank all files by relevance to review query
+    all_files = get_all_repo_files(repo_id)
+    ranking_response = relace.code_reranker.rank(
+        query=review_query,
+        codebase=all_files,
+        token_limit=100000
+    )
+    
+    # 3. Focus on high-relevance files
+    relevant_files = [
+        f for f in ranking_response['results'] 
+        if f['score'] > 0.5
+    ]
+    
+    # 4. Generate review comments
+    review_context = build_review_context(context_response, relevant_files)
+    
+    # 5. Use your LLM for review generation
+    review_prompt = f"""
+    Review these code changes for:
+    - Security issues
+    - Performance concerns  
+    - Best practices
+    - Integration with existing code
+    
+    Context: {review_context}
+    Changed files: {changed_files}
+    """
+    
+    return your_llm.generate_review(review_prompt)
+
+# Usage
+review = ai_code_review(
+    repo_id="my-repo",
+    changed_files=["src/auth.py", "src/models.py"],
+    review_query="authentication and user management security"
+)
+```
+
+### Pattern 4: Progressive Code Refactoring
+
+Implement large-scale refactoring using incremental changes:
+
+```python
+def progressive_refactor(repo_id, refactor_plan):
+    """
+    Apply complex refactoring in small, manageable steps
+    """
+    current_state = relace.repos.get_current_state(repo_id)
+    
+    for step in refactor_plan:
+        # 1. Find files affected by this refactoring step
+        affected_files = relace.repos.retrieve(
+            repo_id=repo_id,
+            query=step['description'],
+            include_content=True
+        )
+        
+        # 2. Rank files by relevance to this step
+        ranked_files = relace.code_reranker.rank(
+            query=step['description'],
+            codebase=affected_files['results'],
+            token_limit=30000
+        )
+        
+        # 3. Apply changes to each file incrementally
+        for file_info in ranked_files['results'][:step['max_files']]:
+            if file_info['score'] > step['threshold']:
+                # Get current file content
+                current_content = get_file_content(repo_id, file_info['filename'])
+                
+                # Generate refactoring changes
+                refactor_prompt = f"""
+                Apply this refactoring step: {step['description']}
+                
+                Current code:
+                {current_content}
+                
+                Provide only the changes using context markers.
+                """
+                
+                edit_snippet = your_llm.generate(refactor_prompt)
+                
+                # Apply changes
+                merged_code = relace.instant_apply.apply(
+                    initial_code=current_content,
+                    edit_snippet=edit_snippet
+                )
+                
+                # Update repository
+                relace.repos.update(
+                    repo_id=repo_id,
+                    source={
+                        "type": "diff",
+                        "operations": [{
+                            "type": "write",
+                            "filename": file_info['filename'],
+                            "content": merged_code['mergedCode']
+                        }]
+                    }
+                )
+        
+        # Validate changes before proceeding
+        run_tests_and_validate(repo_id)
+
+# Usage
+refactor_plan = [
+    {
+        "description": "Extract authentication logic into separate service",
+        "threshold": 0.7,
+        "max_files": 5
+    },
+    {
+        "description": "Update imports and dependencies for new auth service",
+        "threshold": 0.5,
+        "max_files": 10
+    },
+    {
+        "description": "Add error handling for auth service integration",
+        "threshold": 0.6,
+        "max_files": 8
+    }
+]
+
+progressive_refactor("my-repo", refactor_plan)
+```
+
+## Performance Optimization
+
+### Caching Strategy
+```python
+import redis
+import json
+
+redis_client = redis.Redis()
+
+def cached_embed(text, cache_key=None):
+    if not cache_key:
+        cache_key = f"embed:{hash(text)}"
+    
+    # Check cache first
+    cached_result = redis_client.get(cache_key)
+    if cached_result:
+        return json.loads(cached_result)
+    
+    # Generate embedding
+    result = relace.embeddings.embed(
+        model="relace-embed-v1",
+        input=[text]
+    )
+    
+    # Cache result
+    redis_client.setex(cache_key, 3600, json.dumps(result))
+    return result
+```
+
+### Batch Processing
+```python
+def batch_process_files(files, batch_size=50):
+    """Process files in batches for better performance"""
+    results = []
+    
+    for i in range(0, len(files), batch_size):
+        batch = files[i:i + batch_size]
+        batch_content = [f['content'] for f in batch]
+        
+        # Process batch
+        response = relace.embeddings.embed(
+            model="relace-embed-v1",
+            input=batch_content,
+            output_dtype="binary"
+        )
+        
+        # Combine with filenames
+        for j, result in enumerate(response['results']):
+            results.append({
+                'filename': batch[j]['filename'],
+                'embedding': result['embedding']
+            })
+    
+    return results
+```
+
+## Error Handling and Resilience
+
+```python
+import time
+from typing import Optional
+
+def resilient_api_call(api_func, max_retries=3, backoff_factor=2):
+    """Wrapper for resilient API calls with exponential backoff"""
+    for attempt in range(max_retries):
+        try:
+            return api_func()
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise e
+            
+            wait_time = backoff_factor ** attempt
+            print(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time}s...")
+            time.sleep(wait_time)
+
+# Usage
+def safe_retrieve(repo_id, query):
+    return resilient_api_call(
+        lambda: relace.repos.retrieve(repo_id=repo_id, query=query)
+    )
+```
+
+## Next Steps
+
+- Explore individual API documentation for detailed parameter options
+- Check out the [Repos Semantic Understanding](/docs/repos/semantic-understanding) guide for advanced retrieval patterns
+- Review [Best Practices](/docs/repos/overview#best-practices) for each service
+- See the [Instant Apply Workflow Guide](/docs/instant-apply/workflow) for production integration patterns

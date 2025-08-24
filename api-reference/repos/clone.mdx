@@ -1,8 +1,12 @@
 ---
 title: 'Clone Repo'
 api: 'GET https://api.relace.ai/v1/repo/{repo_id}/clone'
-description: 'Clone a repository and get all its files'
+description: 'Download all files and content from a repository'
 ---
+
+<Note>
+  This endpoint provides a convenient way to download all files from a repository at once. For selective file retrieval, consider using the [retrieve endpoint](/api-reference/repos/retrieve) with `include_content: true`.
+</Note>
 
 ## Path Parameters
 
@@ -13,7 +17,7 @@ description: 'Clone a repository and get all its files'
 ## Response
 
 <ResponseField name="files" type="array">
-  Array of all files in the repository
+  Array of all files in the repository with their complete content
   
   <Expandable title="properties" defaultOpen={false}>
     <ResponseField name="filename" type="string">

@@ -103,6 +103,7 @@
                 "pages": [
                   "api-reference/repos/list",
                   "api-reference/repos/create",
+                  "api-reference/repos/get",
                   "api-reference/repos/update",
                   "api-reference/repos/delete",
                   "api-reference/repos/clone"
@@ -112,7 +113,8 @@
                 "group": "Semantic Retrieval",
                 "pages": [
                   "api-reference/repos/retrieve",
-                  "api-reference/repos/ask"
+                  "api-reference/repos/ask",
+                  "api-reference/repos/search"
                 ]
               }
             ]

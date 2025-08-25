@@ -17,7 +17,7 @@ Start by transferring your existing repositories to Relace.
 ```python From GitHub
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -40,7 +40,7 @@ print(f"Repository created with ID: {repo['repo_id']}")
 ```python From Files
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -65,6 +65,61 @@ repo = response.json()
 print(f"Repository created with ID: {repo['repo_id']}")
 ```
 
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+// From Git
+await client.POST('/repo', {
+  body: {
+    source: {
+      type: 'git',
+      url: 'https://github.com/username/repository-name',
+      branch: 'main',
+    },
+  },
+})
+
+// From files
+await client.POST('/repo', {
+  body: {
+    source: {
+      type: 'files',
+      files: [
+        {
+          filename: 'src/main.py',
+          content: "def main():\n    print('Hello')\n",
+        },
+      ],
+    },
+  },
+})
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import create_repo_repo_post
+from relace_agent_client.models import RepoCreateRequest, RepoCreateGitSource, RepoCreateFilesSource, File as ModelFile
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+
+# From Git
+with client as c:
+        created = create_repo_repo_post.sync(
+                client=c,
+                body=RepoCreateRequest(source=RepoCreateGitSource(type_="git", url="https://github.com/username/repository-name", branch="main")),
+        )
+
+# From files
+files = [ModelFile(filename="src/main.py", content="print('Hello')\n")]
+with client as c:
+        created = create_repo_repo_post.sync(
+                client=c,
+                body=RepoCreateRequest(source=RepoCreateFilesSource(type_="files", files=files)),
+        )
+```
+
 </CodeGroup>
 
 Keep track of the Relace `repo_id` in your database for future reference. You can optionally include a `metadata` parameter to add any properties of repos you want to maintain.
@@ -78,7 +133,7 @@ Now that your repositories live in Relace, you can integrate them with your agen
 ```python
 import requests
 
-url = f"https://api.relace.ai/v1/repo/{repo_id}/clone"
+url = f"https://api.relace.run/v1/repo/{repo_id}/clone"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
@@ -92,6 +147,29 @@ for file in repo_files['files']:
     print(f"Content: {file['content'][:100]}...")  # First 100 characters
 ```
 
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+const { data: clone } = await client.GET('/repo/{repo_id}/clone', {
+  params: { path: { repo_id } },
+})
+for (const f of clone?.files ?? []) {
+  console.log(f.filename, f.content.length)
+}
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import clone_repo_repo_repo_id_clone_get
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+with client as c:
+        clone = clone_repo_repo_repo_id_clone_get.sync(client=c, repo_id=repo_id)
+for f in (clone.files or []):
+        print(f.filename, len(f.content))
+```
+
 After your agent modifies files, push the changes back to Relace. You can either update specific files or overwrite all repository content.
 
 <CodeGroup>
@@ -100,7 +178,7 @@ After your agent modifies files, push the changes back to Relace. You can either
 import requests
 
 # Apply specific file operations using diff mode
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -136,7 +214,7 @@ print(f"Applied diff operations: {response.json()}")
 import requests
 
 # Overwrite all repository content
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -162,6 +240,46 @@ response = requests.post(url, headers=headers, json=data)
 print(f"Overwrote repository: {response.json()}")
 ```
 
+```ts TypeScript SDK (Diff)
+import createRelaceClient from '@relace-ai/agent-client'
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+await client.POST('/repo/{repo_id}/update', {
+  params: { path: { repo_id } },
+  body: {
+    source: {
+      type: 'diff',
+      operations: [
+        {
+          type: 'write',
+          filename: 'src/main.py',
+          content: "print('updated')\n",
+        },
+        { type: 'delete', filename: 'old-unused-file.py' },
+      ],
+    },
+  },
+})
+```
+
+```python Python SDK (Diff)
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import update_repo_contents_repo_repo_id_update_post
+from relace_agent_client.models import RepoUpdateRequest, RepoUpdateDiff, FileWriteOperation, FileDeleteOperation
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+req = RepoUpdateRequest(
+        source=RepoUpdateDiff(
+                type_="diff",
+                operations=[
+                        FileWriteOperation(type_="write", filename="src/main.py", content="print('updated')\n"),
+                        FileDeleteOperation(type_="delete", filename="old-unused-file.py"),
+                ],
+        )
+)
+with client as c:
+        update_repo_contents_repo_repo_id_update_post.sync(client=c, repo_id=repo_id, body=req)
+```
+
 </CodeGroup>
 
 ## 3. Use Built-In Semantic Retrieval
@@ -171,7 +289,7 @@ Repositories stored in Relace get automatically indexed with our code embedding 
 ```python
 import requests
 
-url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+url = f"https://api.relace.run/v1/repo/{repo_id}/retrieve"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -182,6 +300,36 @@ data = {
 
 response = requests.post(url, headers=headers, json=data)
 results = response.json()["results"]
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+const { data } = await client.POST('/repo/{repo_id}/retrieve', {
+  params: { path: { repo_id } },
+  body: {
+    query: 'Add a user profile component',
+    include_content: true,
+    score_threshold: 0.3,
+  },
+})
+console.log(data?.results)
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import retrieve_relevant_content_repo_repo_id_retrieve_post
+from relace_agent_client.models import RepoRetrieveRequest
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+with client as c:
+        r = retrieve_relevant_content_repo_repo_id_retrieve_post.sync(
+                client=c,
+                repo_id=repo_id,
+                body=RepoRetrieveRequest(query="Add a user profile component", include_content=True, score_threshold=0.3),
+        )
+print(r)
 ```
 
 You can parse the results the same way you do with direct calls to the reranker.

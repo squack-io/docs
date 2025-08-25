@@ -1,6 +1,6 @@
 ---
 title: 'Delete Repo'
-api: 'DELETE https://api.relace.ai/v1/repo/{repo_id}'
+api: 'DELETE https://api.relace.run/v1/repo/{repo_id}'
 description: 'Delete a repo and all its associated data'
 ---
 
@@ -17,7 +17,7 @@ This endpoint returns no content on successful deletion.
 <RequestExample>
 
 ```bash cURL
-curl -X DELETE https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
+curl -X DELETE https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -25,13 +25,35 @@ curl -X DELETE https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-42661417400
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}"
+url = f"https://api.relace.run/v1/repo/{repo_id}"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
 
 response = requests.delete(url, headers=headers)
 print(f"Status: {response.status_code}")
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const repo_id = '123e4567-e89b-12d3-a456-426614174000'
+const { response, error } = await client.DELETE('/repo/{repo_id}', {
+  params: { path: { repo_id } },
+})
+if (error) throw error
+console.log('Status:', response.status)
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import delete_repo_repo_repo_id_delete
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+with client as c:
+    delete_repo_repo_repo_id_delete.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000")
 ```
 
 </RequestExample>

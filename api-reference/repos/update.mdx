@@ -1,6 +1,6 @@
 ---
 title: 'Update Repo'
-api: 'POST https://api.relace.ai/v1/repo/{repo_id}/update'
+api: 'POST https://api.relace.run/v1/repo/{repo_id}/update'
 description: 'Update repo content with files or sync from Git.'
 ---
 
@@ -24,75 +24,75 @@ description: 'Update repo content with files or sync from Git.'
   `"diff"` for specific operations
 </ParamField>
 
-  <Tabs>
-    <Tab title="Git">
-      <ParamField body="url" type="string" required>
-        Git repo URL to sync from
-      </ParamField>
-      
-      <ParamField body="branch" type="string">
-        Specific branch to sync (optional)
-      </ParamField>
-    </Tab>
-    
-    <Tab title="Files">
-      <ParamField body="files" type="array" required>
+<Tabs>
+  <Tab title="Git">
+    <ParamField body="url" type="string" required>
+      Git repo URL to sync from
+    </ParamField>
+
+    <ParamField body="branch" type="string">
+      Specific branch to sync (optional)
+    </ParamField>
+  </Tab>
+
+  <Tab title="Files">
+    <ParamField body="files" type="array" required>
         Array of file objects that will completely replace the repo content. Any files not included will be deleted from the repo.
         
-        <Expandable title="properties" defaultOpen={false}>
+      <Expandable title="properties" defaultOpen={false}>
         <ParamField body="filename" type="string" required>
           The path and filename for the file
         </ParamField>
-        
+
         <ParamField body="content" type="string" required>
           The content of the file
         </ParamField>
-        </Expandable>
-      </ParamField>
-    </Tab>
-    
-    <Tab title="Diff">
-      <ParamField body="operations" type="array" required>
-        Array of file operations to perform
+      </Expandable>
+    </ParamField>
+  </Tab>
+
+  <Tab title="Diff">
+    <ParamField body="operations" type="array" required>
+      Array of file operations to perform
         
-        <Expandable title="properties" defaultOpen={false}>
+      <Expandable title="properties" defaultOpen={false}>
         <ParamField body="type" type="string" required>
           Operation type: `"write"` to create/update, `"rename"` to change filename, or `"delete"` to remove
           
           <Expandable title="operation-specific properties" defaultOpen={false}>
-          <Tabs>
-            <Tab title="Write">
-              <ParamField body="filename" type="string" required>
-                The path and filename for the file
-              </ParamField>
-              
-              <ParamField body="content" type="string" required>
-                The content of the file
-              </ParamField>
-            </Tab>
-            
-            <Tab title="Rename">
-              <ParamField body="old_filename" type="string" required>
-                The current path and filename
-              </ParamField>
-              
-              <ParamField body="new_filename" type="string" required>
-                The new path and filename
-              </ParamField>
-            </Tab>
-            
-            <Tab title="Delete">
-              <ParamField body="filename" type="string" required>
-                The path and filename to delete
-              </ParamField>
-            </Tab>
-          </Tabs>
+            <Tabs>
+              <Tab title="Write">
+                <ParamField body="filename" type="string" required>
+                  The path and filename for the file
+                </ParamField>
+
+                <ParamField body="content" type="string" required>
+                  The content of the file
+                </ParamField>
+              </Tab>
+
+              <Tab title="Rename">
+                <ParamField body="old_filename" type="string" required>
+                  The current path and filename
+                </ParamField>
+
+                <ParamField body="new_filename" type="string" required>
+                  The new path and filename
+                </ParamField>
+              </Tab>
+
+              <Tab title="Delete">
+                <ParamField body="filename" type="string" required>
+                  The path and filename to delete
+                </ParamField>
+              </Tab>
+            </Tabs>
           </Expandable>
         </ParamField>
-        </Expandable>
-      </ParamField>
-    </Tab>
-  </Tabs>
+      </Expandable>
+    </ParamField>
+  </Tab>
+</Tabs>
 
   </Expandable>
 </ParamField>
@@ -106,7 +106,7 @@ description: 'Update repo content with files or sync from Git.'
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
+curl -X POST https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -136,7 +136,7 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -167,6 +167,52 @@ data = {
 
 response = requests.post(url, headers=headers, json=data)
 print(response.json())
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const repo_id = '123e4567-e89b-12d3-a456-426614174000'
+await client.POST('/repo/{repo_id}/update', {
+  params: { path: { repo_id } },
+  body: {
+    source: {
+      type: 'diff',
+      operations: [
+        { type: 'write', filename: 'src/search.ts', content: '// ...' },
+        {
+          type: 'rename',
+          old_filename: 'src/utils.ts',
+          new_filename: 'src/helpers.ts',
+        },
+        { type: 'delete', filename: 'old-file.js' },
+      ],
+    },
+  },
+})
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import update_repo_contents_repo_repo_id_update_post
+from relace_agent_client.models import RepoUpdateRequest, RepoUpdateDiff, FileWriteOperation, FileRenameOperation, FileDeleteOperation
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+req = RepoUpdateRequest(
+    source=RepoUpdateDiff(
+        type_="diff",
+        operations=[
+            FileWriteOperation(type_="write", filename="src/search.ts", content="// ..."),
+            FileRenameOperation(type_="rename", old_filename="src/utils.ts", new_filename="src/helpers.ts"),
+            FileDeleteOperation(type_="delete", filename="old-file.js"),
+        ],
+    )
+)
+with client as c:
+    info = update_repo_contents_repo_repo_id_update_post.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000", body=req)
+print(info)
 ```
 
 </RequestExample>

@@ -1,6 +1,6 @@
 ---
 title: 'Get Repo Details'
-api: 'GET https://api.relace.ai/v1/repo/{repo_id}'
+api: 'GET https://api.relace.run/v1/repo/{repo_id}'
 description: 'Retrieve details about a specific repository'
 ---
 
@@ -31,7 +31,7 @@ description: 'Retrieve details about a specific repository'
 <RequestExample>
 
 ```bash cURL
-curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
+curl -X GET https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -39,7 +39,7 @@ curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000 \
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}"
+url = f"https://api.relace.run/v1/repo/{repo_id}"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
@@ -65,7 +65,7 @@ console.log(data)
 from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import get_repo_repo_repo_id_get
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 with client as c:
     repo = get_repo_repo_repo_id_get.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000")
 print(repo)

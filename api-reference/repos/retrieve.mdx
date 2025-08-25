@@ -1,6 +1,6 @@
 ---
 title: 'Retrieve'
-api: 'POST https://api.relace.ai/v1/repo/{repo_id}/retrieve'
+api: 'POST https://api.relace.run/v1/repo/{repo_id}/retrieve'
 description: 'Two-stage codebase retrieval using semantic search'
 ---
 
@@ -56,7 +56,7 @@ description: 'Two-stage codebase retrieval using semantic search'
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/retrieve \
+curl -X POST https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000/retrieve \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -71,7 +71,7 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+url = f"https://api.relace.run/v1/repo/{repo_id}/retrieve"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -109,7 +109,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import retrieve_relevant_content_repo_repo_id_retrieve_post
 from relace_agent_client.models import RepoRetrieveRequest
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 with client as c:
     r = retrieve_relevant_content_repo_repo_id_retrieve_post.sync(
         client=c,

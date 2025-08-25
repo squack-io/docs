@@ -1,6 +1,6 @@
 ---
 title: 'List Repos'
-api: 'GET https://api.relace.ai/v1/repo'
+api: 'GET https://api.relace.run/v1/repo'
 description: 'Get a paginated list of all repos you own.'
 ---
 
@@ -59,14 +59,14 @@ description: 'Get a paginated list of all repos you own.'
 <RequestExample>
 
 ```bash cURL
-curl -X GET "https://api.relace.ai/v1/repo?page_size=10" \
+curl -X GET "https://api.relace.run/v1/repo?page_size=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```python Python
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
@@ -94,7 +94,7 @@ console.log(res.data)
 from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import list_repo_metadata_repo_get
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 with client as c:
     page = list_repo_metadata_repo_get.sync(client=c, page_size=10)
     print(page)

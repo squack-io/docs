@@ -22,7 +22,7 @@
       "description": "Server for code embedding endpoints"
     },
     {
-      "url": "https://api.relace.ai",
+      "url": "https://api.relace.run",
       "description": "Server for general infrastructure"
     }
   ],
@@ -504,7 +504,7 @@
         "description": "Create a new repository",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "requestBody": {
@@ -555,7 +555,7 @@
         "description": "List all repositories",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [
@@ -634,7 +634,7 @@
         "description": "Delete a repository",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [
@@ -680,7 +680,7 @@
         "description": "Update repository content",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [
@@ -754,7 +754,7 @@
         "description": "Retrieve relevant files from repository using semantic search",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [
@@ -828,7 +828,7 @@
         "description": "Ask a question about the repository content",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [
@@ -902,7 +902,7 @@
         "description": "Search for specific text patterns in repository files",
         "servers": [
           {
-            "url": "https://api.relace.ai"
+            "url": "https://api.relace.run"
           }
         ],
         "parameters": [

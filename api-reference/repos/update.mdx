@@ -1,6 +1,6 @@
 ---
 title: 'Update Repo'
-api: 'POST https://api.relace.ai/v1/repo/{repo_id}/update'
+api: 'POST https://api.relace.run/v1/repo/{repo_id}/update'
 description: 'Update repo content with files or sync from Git.'
 ---
 
@@ -106,7 +106,7 @@ description: 'Update repo content with files or sync from Git.'
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
+curl -X POST https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000/update \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -136,7 +136,7 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -199,7 +199,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import update_repo_contents_repo_repo_id_update_post
 from relace_agent_client.models import RepoUpdateRequest, RepoUpdateDiff, FileWriteOperation, FileRenameOperation, FileDeleteOperation
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 req = RepoUpdateRequest(
     source=RepoUpdateDiff(
         type_="diff",

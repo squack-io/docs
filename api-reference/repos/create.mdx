@@ -1,6 +1,6 @@
 ---
 title: 'Create Repo'
-api: 'POST https://api.relace.ai/v1/repo'
+api: 'POST https://api.relace.run/v1/repo'
 description: 'Create a new repo from files or a GitHub repo.'
 ---
 
@@ -69,7 +69,7 @@ description: 'Create a new repo from files or a GitHub repo.'
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.relace.ai/v1/repo \
+curl -X POST https://api.relace.run/v1/repo \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
     -d '{
@@ -97,7 +97,7 @@ curl -X POST https://api.relace.ai/v1/repo \
 ```python Python
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -154,7 +154,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import create_repo_repo_post
 from relace_agent_client.models import RepoCreateRequest, RepoCreateFilesSource, File as ModelFile
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 files = [
     ModelFile(filename="src/search.ts", content="// ..."),
     ModelFile(filename="src/types.ts", content="// ..."),

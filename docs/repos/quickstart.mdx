@@ -17,7 +17,7 @@ Start by transferring your existing repositories to Relace.
 ```python From GitHub
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -40,7 +40,7 @@ print(f"Repository created with ID: {repo['repo_id']}")
 ```python From Files
 import requests
 
-url = "https://api.relace.ai/v1/repo"
+url = "https://api.relace.run/v1/repo"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -102,7 +102,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import create_repo_repo_post
 from relace_agent_client.models import RepoCreateRequest, RepoCreateGitSource, RepoCreateFilesSource, File as ModelFile
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 
 # From Git
 with client as c:
@@ -133,7 +133,7 @@ Now that your repositories live in Relace, you can integrate them with your agen
 ```python
 import requests
 
-url = f"https://api.relace.ai/v1/repo/{repo_id}/clone"
+url = f"https://api.relace.run/v1/repo/{repo_id}/clone"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
@@ -163,7 +163,7 @@ for (const f of clone?.files ?? []) {
 from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import clone_repo_repo_repo_id_clone_get
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 with client as c:
         clone = clone_repo_repo_repo_id_clone_get.sync(client=c, repo_id=repo_id)
 for f in (clone.files or []):
@@ -178,7 +178,7 @@ After your agent modifies files, push the changes back to Relace. You can either
 import requests
 
 # Apply specific file operations using diff mode
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -214,7 +214,7 @@ print(f"Applied diff operations: {response.json()}")
 import requests
 
 # Overwrite all repository content
-url = f"https://api.relace.ai/v1/repo/{repo_id}/update"
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -266,7 +266,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import update_repo_contents_repo_repo_id_update_post
 from relace_agent_client.models import RepoUpdateRequest, RepoUpdateDiff, FileWriteOperation, FileDeleteOperation
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 req = RepoUpdateRequest(
         source=RepoUpdateDiff(
                 type_="diff",
@@ -289,7 +289,7 @@ Repositories stored in Relace get automatically indexed with our code embedding 
 ```python
 import requests
 
-url = f"https://api.relace.ai/v1/repo/{repo_id}/retrieve"
+url = f"https://api.relace.run/v1/repo/{repo_id}/retrieve"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -322,7 +322,7 @@ from relace_agent_client import AuthenticatedClient
 from relace_agent_client.api.default import retrieve_relevant_content_repo_repo_id_retrieve_post
 from relace_agent_client.models import RepoRetrieveRequest
 
-client = AuthenticatedClient(base_url="https://api.relace.ai/v1", token="YOUR_API_KEY")
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
 with client as c:
         r = retrieve_relevant_content_repo_repo_id_retrieve_post.sync(
                 client=c,

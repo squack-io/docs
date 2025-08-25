@@ -1,6 +1,6 @@
 ---
 title: 'Ask'
-api: 'POST https://api.relace.ai/v1/repo/{repo_id}/ask'
+api: 'POST https://api.relace.run/v1/repo/{repo_id}/ask'
 description: 'Ask natural language questions about repo content'
 ---
 
@@ -26,7 +26,7 @@ description: 'Ask natural language questions about repo content'
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/ask \
+curl -X POST https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000/ask \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -38,7 +38,7 @@ curl -X POST https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}/ask"
+url = f"https://api.relace.run/v1/repo/{repo_id}/ask"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -49,6 +49,33 @@ data = {
 
 response = requests.post(url, headers=headers, json=data)
 print(response.json())
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const { data } = await client.POST('/repo/{repo_id}/ask', {
+  params: { path: { repo_id: '123e4567-e89b-12d3-a456-426614174000' } },
+  body: { query: 'How does the user authentication system work?' },
+})
+console.log(data?.answer)
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import ask_question_repo_repo_id_ask_post
+from relace_agent_client.models import RepoAskRequest
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+with client as c:
+    res = ask_question_repo_repo_id_ask_post.sync(
+        client=c,
+        repo_id="123e4567-e89b-12d3-a456-426614174000",
+        body=RepoAskRequest(query="How does the user authentication system work?"),
+    )
+print(res.answer)
 ```
 
 </RequestExample>

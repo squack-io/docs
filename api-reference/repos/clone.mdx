@@ -1,8 +1,12 @@
 ---
 title: 'Clone Repo'
-api: 'GET https://api.relace.ai/v1/repo/{repo_id}/clone'
-description: 'Clone a repository and get all its files'
+api: 'GET https://api.relace.run/v1/repo/{repo_id}/clone'
+description: 'Download all files and content from a repository'
 ---
+
+<Note>
+  This endpoint provides a convenient way to download all files from a repository at once. For selective file retrieval, consider using the [retrieve endpoint](/api-reference/repos/retrieve) with `include_content: true`.
+</Note>
 
 ## Path Parameters
 
@@ -13,13 +17,13 @@ description: 'Clone a repository and get all its files'
 ## Response
 
 <ResponseField name="files" type="array">
-  Array of all files in the repository
+  Array of all files in the repository with their complete content
   
   <Expandable title="properties" defaultOpen={false}>
     <ResponseField name="filename" type="string">
       Path to the file within the repo
     </ResponseField>
-    
+
     <ResponseField name="content" type="string">
       Full content of the file
     </ResponseField>
@@ -29,7 +33,7 @@ description: 'Clone a repository and get all its files'
 <RequestExample>
 
 ```bash cURL
-curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/clone \
+curl -X GET https://api.relace.run/v1/repo/123e4567-e89b-12d3-a456-426614174000/clone \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -37,13 +41,39 @@ curl -X GET https://api.relace.ai/v1/repo/123e4567-e89b-12d3-a456-426614174000/c
 import requests
 
 repo_id = "123e4567-e89b-12d3-a456-426614174000"
-url = f"https://api.relace.ai/v1/repo/{repo_id}/clone"
+url = f"https://api.relace.run/v1/repo/{repo_id}/clone"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY"
 }
 
 response = requests.get(url, headers=headers)
 print(response.json())
+```
+
+```ts TypeScript SDK
+import createRelaceClient from '@relace-ai/agent-client'
+
+const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
+
+const repo_id = '123e4567-e89b-12d3-a456-426614174000'
+const { data, error } = await client.GET('/repo/{repo_id}/clone', {
+  params: { path: { repo_id } },
+})
+if (error) throw error
+for (const f of data?.files ?? []) {
+  console.log(f.filename, f.content.length)
+}
+```
+
+```python Python SDK
+from relace_agent_client import AuthenticatedClient
+from relace_agent_client.api.default import clone_repo_repo_repo_id_clone_get
+
+client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
+with client as c:
+    clone = clone_repo_repo_repo_id_clone_get.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000")
+for f in (clone.files or []):
+    print(f.filename, len(f.content))
 ```
 
 </RequestExample>

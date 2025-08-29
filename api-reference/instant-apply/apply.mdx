@@ -2,3 +2,35 @@
 title: 'Apply Code'
 openapi: 'POST /v1/code/apply'
 ---
+
+Relace apply models run at up to 10,000 tok/s, making complicated code merges feel instantaneous.
+
+## Models
+
+We support two families of models, `lite` and `main`. The `lite` family has fewer parameters, and is highly accurate for shorter requests (less than 16k tokens). The `main` family is designed specifically to improve accuracy for long context tasks (>16k tokens).
+
+| Model                   | Speed       | Max Input | Use Case                         |
+| :---------------------- | :---------- | :-------- | :------------------------------- |
+| `auto`                  |             | 40k tok   | Auto-route based on input size   |
+| `relace-apply-2.5-lite` | ~10k tok/s  | 16k tok   | Fast & accurate on short context |
+| `relace-apply-2`        | ~7.5k tok/s | 40k tok   | More accurate on long context    |
+
+We strongly recommend using the `auto` option for best performance.
+
+## OpenAI Compatible Endpoint
+
+If the Relace REST API is inconvenient, we also support an OpenAI compatible endpoint for the apply models:
+
+`https://instantapply.endpoint.relace.run/v1/apply/chat/completions`
+
+Use standard [chat format](https://platform.openai.com/docs/api-reference/chat) with no system prompt and a single user message.
+
+```
+<instruction>{instruction}<instruction>
+<code>{initial_code}</code>
+<update>{edit_snippet}</update>
+```
+
+<Warning>
+  The user message must strictly follow the `<instruction>`, `<code>`, `<update>` format. Requests with incorrect formatting will be rejected.
+</Warning>

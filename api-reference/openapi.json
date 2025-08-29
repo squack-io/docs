@@ -68,7 +68,7 @@
               "text/event-stream": {
                 "schema": {
                   "type": "string",
-                  "description": "Stream of results from the Instant Apply model"
+                  "description": "Stream of results from the Instant Apply model (compatible with OpenAI streaming format)"
                 }
               }
             }
@@ -981,6 +981,12 @@
           "edit_snippet"
         ],
         "properties": {
+          "model": {
+            "type": "string",
+            "description": "Choice of apply model to use",
+            "enum": ["auto", "relace-apply-2.5-lite", "relace-apply-2"],
+            "default": "auto"
+          },
           "initial_code": {
             "type": "string",
             "description": "The original code that needs to be modified"
@@ -988,6 +994,10 @@
           "edit_snippet": {
             "type": "string",
             "description": "The code changes to be applied to the initial code"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Optional single line instruction for to disambiguate the edit snippet. *e.g.* `Remove the captcha from the login page`"
           },
           "stream": {
             "type": "boolean",
@@ -1007,7 +1017,6 @@
           "mergedCode": {
             "type": "string",
             "description": "The merged code with the changes applied",
-            "example": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n\n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n\n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n\n  return Math.max(0, discountedTotal);\n}"
           },
           "usage": {
             "type": "object",
@@ -1015,17 +1024,14 @@
               "prompt_tokens": {
                 "type": "integer",
                 "description": "Number of tokens in the prompt",
-                "example": 174
               },
               "completion_tokens": {
                 "type": "integer",
                 "description": "Number of tokens in the completion",
-                "example": 145
               },
               "total_tokens": {
                 "type": "integer",
                 "description": "Total number of tokens used",
-                "example": 319
               }
             },
             "description": "Token usage information for the request"
@@ -1561,7 +1567,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "API key Authorization header using the Bearer scheme. Rate limiting applies for certain API keys."
+        "description": "Relace API key Authorization header using the Bearer scheme."
       }
     },
     "parameters": {

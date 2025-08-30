@@ -19,18 +19,41 @@ We strongly recommend using the `auto` option for best performance.
 
 ## OpenAI Compatible Endpoint
 
-If the Relace REST API is inconvenient, we also support an OpenAI compatible endpoint for the apply models:
+If the Relace REST API is inconvenient, we also support an OpenAI compatible endpoint for our apply models.
 
-`https://instantapply.endpoint.relace.run/v1/apply/chat/completions`
+```python
+from openai import OpenAI
 
-Use standard [chat format](https://platform.openai.com/docs/api-reference/chat) with no system prompt and a single user message.
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://instantapply.endpoint.relace.run/v1/apply"
+)
 
-```
-<instruction>{instruction}<instruction>
+user_message = """
+<instruction>{instruction}</instruction>
 <code>{initial_code}</code>
 <update>{edit_snippet}</update>
+"""
+
+response = client.chat.completions.create(
+    model="auto",
+    messages=[
+        {
+            "role": "user",
+            "content": user_message
+        }
+    ]
+)
 ```
 
 <Warning>
-  The user message must strictly follow the `<instruction>`, `<code>`, `<update>` format. Requests with incorrect formatting will be rejected.
+  The user message must include `<code>` and `<update>` tags following the format above. The `<instruction>` tag is optional.
 </Warning>
+
+## Fallbacks
+
+We recommend using GPT-4.1-mini with [predictive edits](https://platform.openai.com/docs/guides/predicted-outputs) as a fallback. This option is 10-20x slower than Relace's apply models, but it's useful for redundancy.
+
+Relace apply models also return a `400` error code when input exceeds context limits (see table above). For these cases, GPT-4o-mini's 1M token context window is a reliable fallback option. 
+
+However, even frontier LLMs struggle with long context. We recommend proactive refactoring of files >32k tokens to improve output quality. 

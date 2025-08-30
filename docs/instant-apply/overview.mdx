@@ -30,7 +30,9 @@ function goodbyeWorld() {
 
 We use this structure because it's a natural format _all_ LLMs are naturally good at producing.
 
-Structured diff formats like uDiff or search and replace (S&R) can be applied deterministically, but formatting error rates are high. Even the best models fail 10-15% of the time, and it's much worse for the more economical models like GPT 4o-mini and Haiku.
+Structured diff formats like uDiff or search and replace (S&R) can be applied deterministically, but formatting error rates are high.
+
+Even the best models fail ~8-10% of the time, and it's much worse for the more economical models like GPT 4.1-mini and Haiku. Formatting errors are also higher in the context of a  [workflow](/docs/instant-apply/workflow), where all edits must be represented in one step.
 
 ## Error Rate Comparison
 
@@ -52,7 +54,7 @@ Our model is deployed with speculative decoding on an optimized inference engine
 
 ![Relace Instant Apply Speed Graph](/images/relace_instant_apply_speed_graph.png)
 
-This is more than an order of magnitude faster than any Anthropic or OpenAI model, and twice as fast as models run on specialized silicon (_e.g._ Cerebras).
+This is two orders of magnitude faster than any Anthropic or OpenAI model, and four times as fast as models run on specialized silicon (_e.g._ Cerebras).
 
 In practice, due to the nature of [speculative decoding](https://arxiv.org/abs/2211.17192) you may observe variance on speed depending on the complexity of the edit snippet. Here's a distribution of latency across n=500 requests:
 

@@ -8,7 +8,7 @@ This convention comes from Anthropic's [blog post](https://www.anthropic.com/eng
 
 ## Why use Workflows?
 
-Agents equipped with tool-calling are becoming more popular due to their flexibility. This flexibility comes at a cost though -- they often spend a lot of time viewing files, running bash commands, and checking their work. 
+Agents equipped with tool-calling are becoming more popular due to their flexibility. This flexibility comes at a cost though -- they often spend a lot of time viewing files, running bash commands, and checking their work.
 
 Using a hand-crafted workflow requires more iteration on prompting & orchestration, but it can be many times faster. For prompt-to-app products, where latency can cause significant user frustration, the workflow approach is a strong option.
 
@@ -52,6 +52,6 @@ Here are the rules, follow them closely:
 
 ## Troubleshooting
 
-Depending on the complexity of your system prompt, you may need to adjust the placement or structure of the snippet generation instructions. 
+Depending on the complexity of your system prompt, you may need to adjust the placement or structure of the snippet generation instructions.
 
 We recommend using the Anthropic [workbench](https://console.anthropic.com/workbench) or the OpenAI [playground](https://platform.openai.com/playground) to iterate on your prompt until a few examples work. The goal is to strike a balance between brevity and contextualization of the `// ... rest of code ...` placeholders.

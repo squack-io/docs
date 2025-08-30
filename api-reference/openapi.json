@@ -1016,25 +1016,33 @@
         "properties": {
           "mergedCode": {
             "type": "string",
-            "description": "The merged code with the changes applied",
+            "description": "The merged code with the changes applied"
           },
           "usage": {
             "type": "object",
             "properties": {
               "prompt_tokens": {
                 "type": "integer",
-                "description": "Number of tokens in the prompt",
+                "description": "Number of tokens in the prompt"
               },
               "completion_tokens": {
                 "type": "integer",
-                "description": "Number of tokens in the completion",
+                "description": "Number of tokens in the completion"
               },
               "total_tokens": {
                 "type": "integer",
-                "description": "Total number of tokens used",
+                "description": "Total number of tokens used"
               }
             },
             "description": "Token usage information for the request"
+          }
+        },
+        "example": {
+          "mergedCode": "function calculateTotal(items) {\n  let total = 0;\n  \n  for (const item of items) {\n    total += item.price * item.quantity;\n  }\n  \n  return total;\n}\n\nfunction applyDiscount(total, discountRules) {\n  let discountedTotal = total;\n  \n  if (discountRules.percentOff) {\n    discountedTotal -= (total * discountRules.percentOff / 100);\n  }\n  \n  if (discountRules.fixedAmount && discountRules.fixedAmount < discountedTotal) {\n    discountedTotal -= discountRules.fixedAmount;\n  }\n  \n  return Math.max(0, discountedTotal);\n}",
+          "usage": {
+            "prompt_tokens": 245,
+            "completion_tokens": 187,
+            "total_tokens": 432
           }
         }
       },

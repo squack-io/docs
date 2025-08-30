@@ -1,7 +1,7 @@
 ---
-title: "Fast Apply"
-description: "High-speed code generation with speculative decoding"
-icon: "bolt"
+title: 'Fast Apply'
+description: 'High-speed code generation with speculative decoding'
+icon: 'bolt'
 ---
 
 ## Why Fast Apply?
@@ -81,11 +81,11 @@ Fast Apply requires specific prompt formatting to achieve optimal code generatio
 
 ### System Prompt
 
-```
+````
 system_prompt = """
-Your job is to suggest modifications to a provided codebase to satisfy a user request. 
-Narrow your focus on the USER REQUEST and NOT other unrelated aspects of the code. 
-Changes should be formatted in a semantic edit snippet optimized to minimize regurgitation of existing code. 
+Your job is to suggest modifications to a provided codebase to satisfy a user request.
+Narrow your focus on the USER REQUEST and NOT other unrelated aspects of the code.
+Changes should be formatted in a semantic edit snippet optimized to minimize regurgitation of existing code.
 Here are the rules, follow them closely:
 
 - Abbreviate sections of the code in your response that will remain the same by replacing those sections with a comment like  "// ... rest of code ...", "// ... keep existing code ...", "// ... code remains the same".
@@ -104,7 +104,7 @@ user_prompt = """EXISTING CODE:
 
     MODIFICATION REQUEST:
     {user_instructions}"""
-```
+````
 
 ## References
 

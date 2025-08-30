@@ -8,62 +8,66 @@ description: 'Create codebase vector embeddings for semantic search'
 - [Sign up](https://app.relace.ai) for a Relace account.
 - Create an [API key](https://app.relace.ai/settings/api-keys).
 
-## 1. Prepare Your Inputs
+<Steps>
+  <Step title="Prepare Your Inputs">
+    Decide what code snippets or text you want to embed. You can embed multiple strings in a single request.
 
-Decide what code snippets or text you want to embed. You can embed multiple strings in a single request.
+    ```python
+    inputs = [
+        "def add(a, b): return a + b",
+        "class User: pass",
+        # ... more code or text
+    ]
+    ```
 
-```python
-inputs = [
-    "def add(a, b): return a + b",
-    "class User: pass",
-    # ... more code or text
-]
-```
+  </Step>
 
-## 2. Call the Embeddings API
+  <Step title="Call the Embeddings API">
+    Send your inputs to the embeddings endpoint to get vector representations.
 
-Send your inputs to the embeddings endpoint to get vector representations.
+    ```python
+    import requests
 
-```python
-import requests
+    url = "https://embeddings.endpoint.relace.run/v1/code/embed"
+    api_key = "[YOUR_API_KEY]"
 
-url = "https://embeddings.endpoint.relace.run/v1/code/embed"
-api_key = "[YOUR_API_KEY]"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
-headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-}
+    data = {
+        "model": "relace-embed-v1",
+        "input": inputs,
+        # Optional: "output_dtype": "float"  # or "binary"
+    }
 
-data = {
-    "model": "relace-embed-v1",
-    "input": inputs,
-    # Optional: "output_dtype": "float"  # or "binary"
-}
+    response = requests.post(url, headers=headers, json=data)
+    embeddings = response.json()
+    ```
 
-response = requests.post(url, headers=headers, json=data)
-embeddings = response.json()
-```
+  </Step>
 
-## 3. Parse Embedding Results
+  <Step title="Parse Embedding Results">
+    The API returns an array of embeddings, one for each input string, and usage info.
 
-The API returns an array of embeddings, one for each input string, and usage info.
+    ```json
+    {
+      "results": [
+        { "index": 0, "embedding": [0.123, 0.456, 0.789] },
+        { "index": 1, "embedding": [0.234, 0.567, 0.89] }
+      ],
+      "usage": {
+        "total_tokens": 8
+      }
+    }
+    ```
 
-```json
-{
-  "results": [
-    { "index": 0, "embedding": [0.123, 0.456, 0.789] },
-    { "index": 1, "embedding": [0.234, 0.567, 0.89] }
-  ],
-  "usage": {
-    "total_tokens": 8
-  }
-}
-```
+    For more details and options, see the [API reference](/api-reference/embed-code/embed).
 
-For more details and options, see the [API reference](/api-reference/embed-code/embed).
+  </Step>
 
-## 4. Store and Search with a Vector Database
+  <Step title="Store and Search with a Vector Database">
 
 Once you have your embeddings, you can store them in a vector database such as [Turbopuffer](https://turbopuffer.com/) or [Pinecone](https://www.pinecone.io/). These databases are designed for efficient similarity search over large collections of vectors.
 
@@ -112,4 +116,7 @@ for match in results["matches"]:
 
 This will return the most relevant code snippets or documents from your database, ranked by similarity to the user query.
 
-For more details, see the [Turbopuffer docs](https://turbopuffer.com/docs) or [Pinecone docs](https://docs.pinecone.io/).
+    For more details, see the [Turbopuffer docs](https://turbopuffer.com/docs) or [Pinecone docs](https://docs.pinecone.io/).
+
+  </Step>
+</Steps>

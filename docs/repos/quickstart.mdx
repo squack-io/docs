@@ -8,7 +8,8 @@ description: "Transition to Relace Repos as your coding agent's source control s
 - [Sign up](https://app.relace.ai) for a Relace account.
 - Create an [API key](https://app.relace.ai/settings/api-keys).
 
-## 1. Transfer Existing Source to Relace
+<Steps>
+  <Step title="Transfer Existing Source to Relace">
 
 Start by transferring your existing repositories to Relace.
 
@@ -122,11 +123,13 @@ with client as c:
 
 </CodeGroup>
 
-Keep track of the Relace `repo_id` in your database for future reference. You can optionally include a `metadata` parameter to add any properties of repos you want to maintain.
+    Keep track of the Relace `repo_id` in your database for future reference. You can optionally include a `metadata` parameter to add any properties of repos you want to maintain.
 
-If you have a lot of repos to transfer, you'll have to perform this step in batches. See the [policies section](/docs/policies#rate-limits) for information on rate limits.
+    If you have a lot of repos to transfer, you'll have to perform this step in batches. See the [policies section](/docs/policies#rate-limits) for information on rate limits.
 
-## 2. Integrate Repos with Your Agent
+  </Step>
+
+  <Step title="Integrate Repos with Your Agent">
 
 Now that your repositories live in Relace, you can integrate them with your agent's local file system. You can fetch the stored files directly from our API without needing to setup git on your host:
 
@@ -282,7 +285,9 @@ with client as c:
 
 </CodeGroup>
 
-## 3. Use Built-In Semantic Retrieval
+  </Step>
+
+  <Step title="Use Built-In Semantic Retrieval">
 
 Repositories stored in Relace get automatically indexed with our code embedding model and are refreshed with each code update. Use the retrieve endpoint as an agent tool to score files based on relevance to a user query.
 
@@ -351,4 +356,7 @@ You can parse the results the same way you do with direct calls to the reranker.
 ]
 ```
 
-For more details, see our [API reference](/api-reference/introduction).
+    For more details, see our [API reference](/api-reference/introduction).
+
+  </Step>
+</Steps>

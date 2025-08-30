@@ -8,64 +8,69 @@ description: 'Retrieve only relevant files from your codebase for a user request
 - [Sign up](https://app.relace.ai) for a Relace account.
 - Create an [API key](https://app.relace.ai/settings/api-keys).
 
-## 1. Prepare Your Query and Codebase
+<Steps>
+  <Step title="Prepare Your Query and Codebase">
+    Define your user request and collect the files from your codebase that need to be ranked for relevance.
 
-Define your user request and collect the files from your codebase that need to be ranked for relevance.
+    ```python
+    user_query = "Add a user profile component with avatar and edit functionality"
+    codebase_files = [
+        {"filename": "src/components/UserProfile.tsx", "content": "..."},
+        {"filename": "src/types/user.ts", "content": "..."},
+        {"filename": "src/components/Header.tsx", "content": "..."},
+        # ... more files
+    ]
+    ```
 
-```python
-user_query = "Add a user profile component with avatar and edit functionality"
-codebase_files = [
-    {"filename": "src/components/UserProfile.tsx", "content": "..."},
-    {"filename": "src/types/user.ts", "content": "..."},
-    {"filename": "src/components/Header.tsx", "content": "..."},
-    # ... more files
-]
-```
+  </Step>
 
-## 2. Call the Code Reranker API
+  <Step title="Call the Code Reranker API">
+    Send your query and codebase to the reranker to get relevance scores for each file.
 
-Send your query and codebase to the reranker to get relevance scores for each file.
+    ```python
+    import requests
 
-```python
-import requests
+    url = "https://ranker.endpoint.relace.run/v2/code/rank"
+    api_key = "[YOUR_API_KEY]"
 
-url = "https://ranker.endpoint.relace.run/v2/code/rank"
-api_key = "[YOUR_API_KEY]"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
-headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-}
+    data = {
+        "query": user_query,
+        "codebase": codebase_files,
+        "token_limit": 150000,  # Set to your model's context limit with buffer room for system prompt
+    }
 
-data = {
-    "query": user_query,
-    "codebase": codebase_files,
-    "token_limit": 150000,  # Set to your model's context limit with buffer room for system prompt
-}
+    response = requests.post(url, headers=headers, json=data)
+    ranked_files = response.json()
+    ```
 
-response = requests.post(url, headers=headers, json=data)
-ranked_files = response.json()
-```
+  </Step>
 
-## 3. Parse Ranked Results from Response
+  <Step title="Parse Ranked Results from Response">
+    The API returns files ranked by relevance with scores between 0 and 1 up to the token limit you set.
 
-The API returns files ranked by relevance with scores between 0 and 1 up to the token limit you set.
+    ```json
+    [
+      {
+        "filename": "src/components/UserProfile.tsx",
+        "score": 0.9598
+      },
+      {
+        "filename": "src/types/user.ts",
+        "score": 0.0321
+      },
+      {
+        "filename": "src/components/Header.tsx",
+        "score": 0.0014
+      }
+    ]
+    ```
 
-```json
-[
-  {
-    "filename": "src/components/UserProfile.tsx",
-    "score": 0.9598
-  },
-  {
-    "filename": "src/types/user.ts",
-    "score": 0.0321
-  },
-  {
-    "filename": "src/components/Header.tsx",
-    "score": 0.0014
-  }
-]
-```
+    We recommend additionally filtering out results with low relevance scores. See the [model overview](/docs/code-reranker/overview) section for more details on how to determine this threshold.
 
-We recommend additionally filtering out results with relevance score ≤ 0.08. See the [model overview](/docs/code-reranker/overview) section for more details.
+  </Step>
+</Steps>

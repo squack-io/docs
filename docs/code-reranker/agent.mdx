@@ -1,0 +1,148 @@
+---
+title: 'Agent Tool Definition'
+---
+
+Agents are continuously running LLMs that process user requests by calling a sequence of tools. Unlike workflows, they are fully autonomous and can be more flexible at coding.
+
+## Why use Agents?
+
+Agents dynamically expand their context by calling tools that explore the codebase, run scripts, and make iterative changes. The are slower and more expensive to run, but can do much more if architected well.
+
+With the right choice of tools, you can optimize the steps the agent takes and cut down on latency/cost.
+
+## Agentic File Exploration
+
+Code agents start with a codebase file tree within context. They are equipped with a File View tool, which they use to explore relevant files to the user query before making any changes.
+
+This approach works well for small codebases. On large codebases, agents have to spend millions of tokens and several minutes traversing the repository before they can make progress.
+
+Semantic search is a useful first pass to shortcut some of the agentic exploration by narrowing down the search space. When used in addition to a standard File View and Grep tool, the agent can find all the relevant files faster and more cheaply.
+
+## Relace Semantic Search Tool
+
+Here's an example tool definition and implementation for using semantic search as a first pass within agentic exploration:
+
+<CodeGroup>
+
+````python Schema
+class SemanticSearchToolSchema(ToolSchema, name="find_relevant_files"):
+    """Use this tool to search for files that are most relevant for a given task or question.
+    The conversation history will be passed in with your query.
+
+    - Call this tool ONE TIME, including all of your tasks/questions.
+    - DO NOT call it multiple times before ending your turn.
+    - Prefer this as the first step to explore or plan edits within a code repository.
+    - Prefer this over using a bash command like `grep` or `find`.
+    - Data files may be excluded from the search.
+
+    The response will be a list of file paths and contents relative to the repository root, ordered from most relevant to least relevant. The format will look like this:
+
+    path/to/file1
+    ```
+    file1 content...
+    ```
+
+    path/to/file2
+    ```
+    file2 content...
+    ```
+    """
+
+    query: str = Field(
+        ...,
+        description="""Natural language description of what you are looking for in the repository.
+        You can describe a particular change you want to make, a feature you want to implement, bug you are trying to fix, information you are searching for, etc.""",
+    )
+````
+
+````python Implementation
+class SemanticSearchTool(Tool[SemanticSearchToolSchema], schema=SemanticSearchToolSchema):
+
+    # Set a token limit for files to surface, and filter out low relevance files
+    score_threshold: float = 0.5
+    token_limit: int = 30_000
+
+    def execute_impl(
+        self,
+        tool_input: SemanticSearchToolSchema,
+        context: Context,
+    ) -> str:
+        try:
+            client = RelaceClient()
+            # Get list of files from repo, ignoring config/data/binary/generated files
+            files = [
+                {
+                    "filename": str(path),
+                    "content": path.read_text()
+                }
+                for path in context.repo.list_tracked_files(
+                    ignore_tracked=(
+                        # Ignore non-code files like:
+                        # - Config files (yaml, env)
+                        # - Lock files (package-lock.json)
+                        # - Data files (csv, json)
+                        # - Binary files (images)
+                        # - Build output
+                    )
+                )
+            ]
+
+            # Call reranker with files, conversation context, and query
+            ranked = client.rank_files(
+                codebase=files,
+                query=(
+                    f"<conversation>{context.history.get_summary()}</conversation>\n"
+                    f"<query>{tool_input.query}</query>"
+                ),
+                token_limit=self.token_limit,
+                threshold=self.score_threshold,
+            )
+
+            # Construct response
+            return "\n\n".join(
+                f"{file_path.relative_to(context.repo.root_path)}\n"
+                f"```\n{file_path.read_text()}\n```"
+                for file_path in ranked
+            )
+        except Exception as e:
+            raise ToolError(f"Error finding files: {str(e)}") from e
+````
+
+</CodeGroup>
+
+### Query Construction
+
+The query can be a short question to ask the codebase or a more detailed user conversation with the user request included.
+
+We recommend using the full conversation when using the semantic search as a first pass, and a more targeted question for subsequent calls.
+
+```python
+query=(
+    f"<conversation>{condensed_user_chat_log}</conversation>\n"
+    f"<query>{query}</query>"
+)
+```
+
+### Token Limit and Score Threshold
+
+For agents, it's better to be conservative with the hyperparameters for the reranker. If necessary, the agent can additionally call File View and Grep tools .
+
+We recommend these defaults for a 200k token context limit agentic model like Claude 4 Sonnet:
+
+```python
+score_threshold: float = 0.5    # Higher than workflows (0.3)
+token_limit: int = 30_000      # Smaller than workflows (100k+)
+```
+
+### Mutiple Search Invocations
+
+If you want to support multiple invocations of the semantic search tool, you'll have to condense redundant files to avoid unecessary context pollution.
+
+For example, two similar queries might surface overlapping files:
+
+- Query 1: "user authentication middleware" → `[auth.ts, middleware.ts, session.ts]`
+- Query 2: "login validation logic" → `[auth.ts, validation.ts, session.ts]`
+
+The actual list of files you want to pass to the agent is the union of both sets: `[auth.ts, middleware.ts, session.ts, validation.ts]`.
+
+You may also want to configure the tool implementation to allow the agent to pull additional files from the same query by increasing the `token_limit` or lowering the `score_threshold` on subsequent calls.

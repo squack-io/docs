@@ -169,52 +169,6 @@ response = requests.post(url, headers=headers, json=data)
 print(response.json())
 ```
 
-```ts TypeScript SDK
-import createRelaceClient from '@relace-ai/agent-client'
-
-const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
-
-const repo_id = '123e4567-e89b-12d3-a456-426614174000'
-await client.POST('/repo/{repo_id}/update', {
-  params: { path: { repo_id } },
-  body: {
-    source: {
-      type: 'diff',
-      operations: [
-        { type: 'write', filename: 'src/search.ts', content: '// ...' },
-        {
-          type: 'rename',
-          old_filename: 'src/utils.ts',
-          new_filename: 'src/helpers.ts',
-        },
-        { type: 'delete', filename: 'old-file.js' },
-      ],
-    },
-  },
-})
-```
-
-```python Python SDK
-from relace_agent_client import AuthenticatedClient
-from relace_agent_client.api.default import update_repo_contents_repo_repo_id_update_post
-from relace_agent_client.models import RepoUpdateRequest, RepoUpdateDiff, FileWriteOperation, FileRenameOperation, FileDeleteOperation
-
-client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
-req = RepoUpdateRequest(
-    source=RepoUpdateDiff(
-        type_="diff",
-        operations=[
-            FileWriteOperation(type_="write", filename="src/search.ts", content="// ..."),
-            FileRenameOperation(type_="rename", old_filename="src/utils.ts", new_filename="src/helpers.ts"),
-            FileDeleteOperation(type_="delete", filename="old-file.js"),
-        ],
-    )
-)
-with client as c:
-    info = update_repo_contents_repo_repo_id_update_post.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000", body=req)
-print(info)
-```
-
 </RequestExample>
 
 <ResponseExample>

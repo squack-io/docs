@@ -128,43 +128,6 @@ response = requests.post(url, headers=headers, json=data)
 print(response.json())
 ```
 
-```ts TypeScript SDK
-import createRelaceClient from '@relace-ai/agent-client'
-
-const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
-
-const { data, error } = await client.POST('/repo', {
-  body: {
-    source: {
-      type: 'files',
-      files: [
-        { filename: 'src/search.ts', content: '// ...' },
-        { filename: 'src/types.ts', content: '// ...' },
-      ],
-    },
-    metadata: { name: 'my-codebase', id: 'my-internal-id' },
-  },
-})
-if (error) throw error
-console.log(data)
-```
-
-```python Python SDK
-from relace_agent_client import AuthenticatedClient
-from relace_agent_client.api.default import create_repo_repo_post
-from relace_agent_client.models import RepoCreateRequest, RepoCreateFilesSource, File as ModelFile
-
-client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
-files = [
-    ModelFile(filename="src/search.ts", content="// ..."),
-    ModelFile(filename="src/types.ts", content="// ..."),
-]
-req = RepoCreateRequest(source=RepoCreateFilesSource(type_="files", files=files))
-with client as c:
-    created = create_repo_repo_post.sync(client=c, body=req)
-print(created)
-```
-
 </RequestExample>
 
 <ResponseExample>

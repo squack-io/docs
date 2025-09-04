@@ -48,29 +48,6 @@ response = requests.get(url, headers=headers)
 print(response.json())
 ```
 
-```ts TypeScript SDK
-import createRelaceClient from '@relace-ai/agent-client'
-
-const client = createRelaceClient({ apiKey: process.env.RELACE_API_KEY! })
-
-const repo_id = '123e4567-e89b-12d3-a456-426614174000'
-const { data, error } = await client.GET('/repo/{repo_id}', {
-  params: { path: { repo_id } },
-})
-if (error) throw error
-console.log(data)
-```
-
-```python Python SDK
-from relace_agent_client import AuthenticatedClient
-from relace_agent_client.api.default import get_repo_repo_repo_id_get
-
-client = AuthenticatedClient(base_url="https://api.relace.run/v1", token="YOUR_API_KEY")
-with client as c:
-    repo = get_repo_repo_repo_id_get.sync(client=c, repo_id="123e4567-e89b-12d3-a456-426614174000")
-print(repo)
-```
-
 </RequestExample>
 
 <ResponseExample>

@@ -53,6 +53,7 @@
                 "pages": [
                   "docs/code-reranker/quickstart",
                   "docs/code-reranker/overview",
+                  "docs/code-reranker/workflow",
                   "docs/code-reranker/agent"
                 ]
               },

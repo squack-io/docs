@@ -29,42 +29,4 @@ We beat the accuracy of Gemini 2.0 Flash-Lite at 2x the speed and 2/3 the cost.
 
 ![Relace Reranker vs. Gemini 2.0 Flash-Lite](/images/relace_vs_gemini_comparison.png)
 
-## Choosing a Relevance Threshold
-
-Our code reranker returns a list of objects with filename and relevance score, like this:
-
-```json
-[
-  {
-    "filename": "src/components/UserProfile.tsx",
-    "relevance_score": 0.9598
-  },
-  {
-    "filename": "src/types/user.ts",
-    "relevance_score": 0.0321
-  },
-  {
-    "filename": "src/components/Header.tsx",
-    "relevance_score": 0.0014
-  }
-]
-```
-
-You'll need to choose an appropriate threshold based on the regime you are in:
-
-- Codebase is too big for the context window, and you have to filter down no matter what
-- Codebase fits in the context, but you want to filter to save on input tokens
-
-For case 1, only the ordering matters -- you basically just feed in all the top files up to the model's token limit into context.
-
-We have a `token_limit` parameter to make this easy. Just set it to the context length of your generation model.
-
-For case 2, you set a relevance threshold based on the recall you want to hit.
-
-| Strategy     | Recall | Threshold | Token Savings |
-| :----------- | :----- | :-------- | :------------ |
-| Conservative | 99%+   | ≤ 0.02    | ~25%          |
-| Balanced     | 95%+   | ≤ 0.08    | ~45%          |
-| Aggressive   | 80-90% | 0.15-0.25 | up to 70%     |
-
 For more code examples and endpoint info, see the [API reference](/api-reference/code-reranker/rank-v2).

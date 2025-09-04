@@ -66,6 +66,7 @@
             "group": "Repos",
             "pages": [
               "docs/repos/quickstart",
+              "docs/repos/github-sync",
               "docs/repos/semantic-understanding",
               "docs/repos/infrastructure"
             ]

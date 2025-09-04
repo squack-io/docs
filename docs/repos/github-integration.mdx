@@ -1,0 +1,132 @@
+---
+title: 'GitHub Integration'
+description: 'Integrate Relace Repos with your GitHub account or app'
+---
+
+Relace Repos is designed to be the source control for your coding agent. You will likely need to integrate with GitHub if you want to support collaboration with human developers.
+
+There are two ways to set up a GitHub integration with Relace depending on whether you want to link to _personal_ GitHub repos or to _user_ repos via your GitHub app.
+
+## Link Personal GitHub Repos
+
+You can provision access to repos belonging to you or your organization with the Relace GitHub App. Go to [GitHub settings](https://app.relace.ai/settings/integrations/github) on the Relace dashboard and choose the "Use Your Own Repos" option.
+
+![Use Your Own Repos option](/images/relace_github_app.png)
+
+In the GitHub app installation flow, you can either allow full access or select specific repos to give Relace.
+
+## Link Your GitHub App
+
+To give Relace access to your users' GitHub repos, you need to maintain your own GitHub app. You can find documentation on [creating GitHub Apps](https://docs.github.com/en/apps/overview) in the GitHub documentation.
+
+Once you've registered and created your app, go to [GitHub settings](https://app.relace.ai/settings/integrations/github) on the Relace dashboard and choose the "Use Your GitHub App" option.
+
+![Use Your GitHub App option](/images/personal_github_app.png)
+
+We'll use the credentials you provide to pull relevant repos from users on your behalf.
+
+## Sync to Relace from GitHub
+
+You can now initialize a Relace Repo by providing a url to a GitHub repo that Relace has been authorized to use.
+
+<CodeGroup>
+
+```python Python
+url = "https://api.relace.run/v1/repo"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "git",
+        "url": "https://github.com/username/repository-name",
+        "branch": "main"
+    },
+    "metadata": {}  # Optional: add any custom properties
+}
+
+response = requests.post(url, headers=headers, json=data)
+repo = response.json()
+print(f"Repository created with ID: {repo['repo_id']}")
+```
+
+```typescript TypeScript
+const response = await fetch('https://api.relace.run/v1/repo', {
+  method: 'POST',
+  headers: {
+    Authorization: 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    source: {
+      type: 'git',
+      url: 'https://github.com/username/repository-name',
+      branch: 'main',
+    },
+    metadata: {}, // Optional: add any custom properties
+  }),
+});
+
+const repo = await response.json();
+console.log(`Repository created with ID: ${repo.repo_id}`);
+```
+
+</CodeGroup>
+
+If the Relace Repo has not diverged from the GitHub source, you can sync the two in a similar way.
+
+<CodeGroup>
+
+```python Python
+url = f"https://api.relace.run/v1/repo/{repo_id}/update"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "source": {
+        "type": "git",
+        "url": "https://github.com/username/repository-name",
+        "branch": "main"
+    }
+}
+
+response = requests.post(url, headers=headers, json=data)
+repo = response.json()
+print(f"Repository updated: {repo['repo_id']}")
+```
+
+```typescript TypeScript
+const response = await fetch(
+  `https://api.relace.run/v1/repo/${repoId}/update`,
+  {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer YOUR_API_KEY',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      source: {
+        type: 'git',
+        url: 'https://github.com/username/repository-name',
+        branch: 'main',
+      },
+    }),
+  }
+);
+
+const repo = await response.json();
+console.log(`Repository updated: ${repo.repo_id}`);
+```
+
+</CodeGroup>
+
+<Warning>
+  Reverse synchronization (pushing changes from Relace Repos back to GitHub) is
+  not currently supported but will be available in an upcoming release.
+</Warning>
+
+For more details on the GitHub related operations, see the [API reference](/api-reference/introduction).

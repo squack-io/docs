@@ -1,38 +1,74 @@
 ---
 title: 'Overview'
-description: 'Learn about how Relace Repos offers convenient source control for your AI agent with built in state-of-the-art code retrieval.'
+description: 'Learn about how Relace Repos offers convenient source control for your AI application with built in state-of-the-art code retrieval.'
 ---
 
 ## Introduction
 
-Relace Repos is a version control system specifically designed for AI-powered code generation. While traditional Git works well for human developers, AI agents have a different set of requirements for optimized code retrieval and edits in their sandboxed execution environments.
+Relace Repos is a fully managed version control system specifically designed for AI applications, offering:
 
+- Lightweight read/write operations enabling easy integration with your backend.
 - Semantic search that maintains low latency on large codebases.
-- Lightweight read/write operations to access code within sandboxes.
 - Multi-tenancy that scales to millions of repositories across thousands of users.
+- Permissive rate limits that allow interactions across many repos simultaneously.
 
+## Source Management for AI
 
+Building a scalable AI code editing application usually requires:
+- Durable storage of source code
+- Versioning, so that unsuccessful or undesired changes can be easily reverted
+- Low-latency reads/writes on the working version of the code
+- Support for automated interactions with thousands of isolated repos
+- Integration with GitHub, to allow human developers to easily collaborate on the same code base
+
+Relace Repos offers a centralized platform that satisfies all of these requirements, seamlessly integrated with our state-of-the-art embedding and retrieval models.
+
+## Existing Alternatives
+
+Industry standard version control services like GitHub are designed primarily for human developers, which leads to some pain points for AI applications.
+
+#### Service limits
+
+Humans have low frequency manual interactions through websites and the git CLI. This results in relatively low limits that are insufficient for large scale automated AI applications:
+- A single account/organization may not exceed [100,000 repos](https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits#organization-and-account-limits)
+- REST API requests may not exceed [5,000 per hour](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#primary-rate-limit-for-authenticated-users) (15,000 for a GitHub app owned by an enterprise organization)
+
+Most text-to-app systems treat each user application as a single repo, which leads to the repo limit being reached very quickly. Systems with many concurrent users will also hit the rate limit relatively quickly. Assuming that a single AI edit requires at least 2 API calls (pulling and pushing), your capacity would be ~2 requests per second.
+
+#### Integration complexity
+
+Human developer workflows are less constrained and more complex than a typical AI application. This leads to a system that requires many distinct steps to make a simple change to the code base:
+1. Clone/checkout the repository locally
+2. Edit the files
+3. Stage and commit the changes
+4. Push to the remote
+
+Since commits are made locally, you must setup a git library or the git CLI on your host. Given that most AI workflows are run in a serverless or sandboxed environment, this also means that full source retrieval must happen every time you spin up the environment. This contributes to high cold-start latency, and often necessitates some sort of file caching strategy.
+
+A relatively simple workflow where an agent reads a code base and edits some files can quickly become a highly complex infrastructure problem.
 
 ## Built-in Two-Stage Retrieval
 
-Setting up codebase indexing is notoriously painful. You need to configure embedding models, set up vector databases, handle chunking strategies, manage metadata extraction, and constantly tune retrieval parameters. And that's before you even get to the reranking layer.
+Providing the right code context to your LLM is essential to produce the best results without sacrificing cost or latency. A reranker model offers the highest quality retrieval, but is computationally expensive to run (retrieval cost scales with the size of the code base). Pre-computing vector embeddings for code and using a vector similarity search for retrieval offers much faster/cheaper retrieval, but with lower accuracy. The best approach tends to be a hybrid system, where a vector search is used to provide a reduced set of candidate files for a reranker.
 
-Relace Repos handles all of this complexity for you. Our two-stage retrieval system automatically:
+Building this kind of system offers several challenges:
+- Embedding and reranker models have a hard limit on the size of input files, which means large files need to be chunked
+- Embeddings need to be stored in a vector database, and kept in sync with your source code
+- Computing embeddings is slow; this means it must be done asynchronously, exposing potential race conditions
 
-**Stage 1: Intelligent Indexing**
+Relace Repos handles all of this complexity for you with our two-stage retrieval system:
 
-- Automatically chunks your code into meaningful segments
-- Generates semantic embeddings using our optimized models
-- Handles file type detection and language-specific parsing
-- Manages incremental updates as your codebase evolves
+**Stage 1: Indexing**
 
-**Stage 2: Smart Reranking**
+- Large files are chunked into meaningful segments and passed to our optimized [Embeddings](/docs/embeddings/quickstart) model
+- Embeddings are updated asynchronously as your codebase evolves. Metadata is updated atomically with codebase edits to provide strongly consistent read-after-write retrieval.
+- A vector similarity search over the stored embeddings is used to produce a set of candidate files for the reranker. Recently edited files that do not yet have stored embeddings are always included in the reranker input.
 
-- Our [Code Reranker](/docs/code-reranker/quickstart) understands code context and dependencies
-- Automatically reorders results based on relevance to the AI agent's task
-- Filters out irrelevant code snippets and focuses on actionable results
+**Stage 2: Reranking**
 
-No more wrestling with embedding configurations or debugging chunking strategies. Just point Relace Repos at your repository and get production-ready semantic search in minutes.
+- Candidate files from the first stage are passed to our [Code Reranker](/docs/code-reranker/quickstart) model
+- Files are ranked by the model based on relevance to the input query
+- Irrelevant code snippets are filtered out entirely
 
 ## Next Steps
 

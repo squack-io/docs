@@ -66,10 +66,10 @@
           {
             "group": "Repos",
             "pages": [
+              "docs/repos/overview",
               "docs/repos/quickstart",
               "docs/repos/github-integration",
-              "docs/repos/semantic-understanding",
-              "docs/repos/infrastructure"
+              "docs/repos/semantic-understanding"
             ]
           },
           {

@@ -42,8 +42,8 @@
               {
                 "group": "Instant Apply",
                 "pages": [
-                  "docs/instant-apply/quickstart",
                   "docs/instant-apply/overview",
+                  "docs/instant-apply/quickstart",
                   "docs/instant-apply/workflow",
                   "docs/instant-apply/agent"
                 ]
@@ -51,8 +51,8 @@
               {
                 "group": "Code Reranker",
                 "pages": [
-                  "docs/code-reranker/quickstart",
                   "docs/code-reranker/overview",
+                  "docs/code-reranker/quickstart",
                   "docs/code-reranker/workflow",
                   "docs/code-reranker/agent"
                 ]
@@ -66,10 +66,10 @@
           {
             "group": "Repos",
             "pages": [
+              "docs/repos/overview",
               "docs/repos/quickstart",
               "docs/repos/github-integration",
-              "docs/repos/semantic-understanding",
-              "docs/repos/infrastructure"
+              "docs/repos/semantic-understanding"
             ]
           },
           {

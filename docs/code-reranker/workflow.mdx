@@ -104,10 +104,16 @@ We have a `token_limit` parameter to make this easy. Just set it to the context 
 
 For case 2, you set a relevance threshold based on the recall you want to hit.
 
-| Strategy     | Recall | Threshold |
-| :----------- | :----- | :-------- |
-| Conservative | 99%+   | ≤ 0.02    |
-| Balanced     | 95%+   | ≤ 0.08    |
-| Aggressive   | 80-90% | 0.15-0.25 |
+| Strategy     | Recall | Threshold | Tokens Saved |
+| :----------- | :----- | :-------- | :----------- |
+| Conservative | 98%+   | ≤ 0.05    | ~45%         |
+| Balanced     | 95%+   | ≤ 0.10    | ~55%         |
+| Aggressive   | 85%+   | ≤ 0.25    | ~70%         |
+
+<Note>
+  This table is based on an average of three internal evaluation datasets.
+  Results may vary on other codebases and use cases. Please reach out to our
+  team to run evals with your data.
+</Note>
 
 For more code examples and endpoint info, see the [API reference](/api-reference/code-reranker/rank-v2).
